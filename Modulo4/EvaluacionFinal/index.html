@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💻 Tecno Chile 🛒</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#home">💻 Tecno Chile</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">🏠 Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#productos">🛍️ Productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#cliente">👤 Cliente</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="cart-toggle" onclick="toggleCart()" data-bs-toggle="tooltip" title="Ver carrito de compras">
+                        <span class="text-purple me-2">🛒 Carrito</span>
+                        <span class="cart-badge" id="cartCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">¡Bienvenidos a Tecno Chile! 💻</h1>
+            <p class="hero-subtitle">La mejor tecnología con el diseño más elegante ✨</p>
+            
+            <div id="heroCarousel" class="carousel slide carousel-container" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?w=800" alt="Computadoras">
+                        <div class="carousel-caption">
+                            <h5>💻 Computadoras de Última Generación</h5>
+                            <p>Rendimiento excepcional para todos tus proyectos</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://images.unsplash.com/photo-1556656793-08538906a9f8?w=800" alt="Smartphones">
+                        <div class="carousel-caption">
+                            <h5>📱 Smartphones Innovadores</h5>
+                            <p>Conectividad y estilo en la palma de tu mano</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800" alt="Accesorios">
+                        <div class="carousel-caption">
+                            <h5>🎧 Accesorios Premium</h5>
+                            <p>Complementa tu experiencia tecnológica</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="cliente" class="container">
+        <div class="customer-section">
+            <h2 class="text-center mb-4" style="color: #8b5cf6;">👤 Información del Cliente</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form id="customerForm">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre:</label>
+                            <input type="text" class="form-control" id="nombre" placeholder="Ingresa tu nombre ✨" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="apellido" class="form-label">Apellido:</label>
+                            <input type="text" class="form-control" id="apellido" placeholder="Ingresa tu apellido 💕" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" data-bs-toggle="tooltip" title="Guarda tu información para personalizar tu experiencia">
+                            💾 Guardar Información
+                        </button>
+                    </form>
+                    <div class="welcome-message" id="welcomeMessage">
+                        <h5>¡Hola <span id="customerName"></span>! 🌸</h5>
+                        <p>¡Qué lindo tenerte aquí! Disfruta explorando nuestros productos 💖</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="productos" class="container">
+        <h2 class="text-center mb-4" style="color: #8b5cf6;">🛍️ Nuestros Productos</h2>
+        
+        <div class="search-container">
+            <div class="position-relative">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="form-control search-input" id="searchInput" placeholder="Buscar productos... 🔍">
+            </div>
+        </div>
+
+        <div class="row" id="productContainer">
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>💻 Tecno Chile</h5>
+                    <p>La tecnología más elegante de Chile 🌸</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>📧 Contacto</h5>
+                    <p>Email: hola@tecnochile.cl</p>
+                    <p>Teléfono: +56 9 1234 5678</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>🌐 Síguenos</h5>
+                    <div class="social-icons">
+                        <a href="#" data-bs-toggle="tooltip" title="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" data-bs-toggle="tooltip" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" data-bs-toggle="tooltip" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" data-bs-toggle="tooltip" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr style="border-color: rgba(255,255,255,0.3);">
+            <div class="text-center">
+                <p>&copy; 2025 Tecno Chile. Hecho con mucho 💖 y dedicación</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Carrito Lateral -->
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+    
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>
+                🛒 Tu Carrito
+                <button class="cart-close" onclick="closeCart()" data-bs-toggle="tooltip" title="Cerrar carrito">
+                    <i class="fas fa-times"></i>
+                </button>
+            </h3>
+        </div>
+        
+        <div class="cart-content">
+            <div class="cart-items-container" id="cartItemsSidebar">
+                <div class="empty-cart-sidebar">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h4>Tu carrito está vacío 🥺</h4>
+                    <p>¡Agrega algunos productos para empezar! ✨</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-total">
+                💰 Total: $<span id="totalPriceSidebar">0</span>
+            </div>
+            <div class="cart-actions">
+                <button class="btn btn-outline-danger" onclick="clearCart()" data-bs-toggle="tooltip" title="Vaciar carrito completo">
+                    🗑️ Vaciar
+                </button>
+                <button class="btn btn-primary" onclick="proceedToCheckout()" data-bs-toggle="tooltip" title="Continuar con la compra">
+                    💳 Comprar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="tienda.js"></script>
+    
+    <script>
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💖';
+            heart.className = 'floating-heart';
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = window.innerHeight + 'px';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 4000);
+        }
+
+        setInterval(createFloatingHeart, 4000);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            setTimeout(() => createFloatingHeart(), 1000);
+            setTimeout(() => createFloatingHeart(), 2000);
+            setTimeout(() => createFloatingHeart(), 3000);
+        });
+    </script>
+</body>
+</html>
