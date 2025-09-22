@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito de Compras (Sin Arreglos)</title>
+    <style>
+        body {
+            background: #f8fafc;
+            font-family: 'Segoe UI', sans-serif;
+            color: #6a1b9a;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background: #fce4ec;
+            max-width: 400px;
+            margin: 40px auto;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px #e1bee7;
+            padding: 32px 24px 24px 24px;
+        }
+        h1 {
+            text-align: center;
+            color: #ab47bc;
+        }
+        label, select, input {
+            display: block;
+            width: 100%;
+            margin-bottom: 16px;
+            font-size: 1rem;
+        }
+        button {
+            background: #b2dfdb;
+            color: #4a148c;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        button:disabled {
+            background: #e0e0e0;
+            color: #bdbdbd;
+        }
+        .resumen {
+            background: #fffde7;
+            color: #6a1b9a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px #ffe0b2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Carrito de Compras</h1>
+        <form id="formulario">
+            <label for="producto">Selecciona un producto:</label>
+            <select id="producto" required>
+                <option value="1">Camiseta ($12.000)</option>
+                <option value="2">Pantalón ($18.000)</option>
+                <option value="3">Zapatos ($25.000)</option>
+            </select>
+            <label for="cantidad">Cantidad:</label>
+            <input type="number" id="cantidad" min="1" value="1" required>
+            <button type="submit">Agregar al carrito</button>
+            <button type="button" id="finalizar">Finalizar compra</button>
+        </form>
+        <div id="resumen" class="resumen" style="display:none;"></div>
+    </div>
+    <script>
+        var totalNeto = 0;
+        var cantidad1 = 0;
+        var cantidad2 = 0;
+        var cantidad3 = 0;
+        var producto1 = "Camiseta";
+        var precio1 = 12000;
+        var producto2 = "Pantalón";
+        var precio2 = 18000;
+        var producto3 = "Zapatos";
+        var precio3 = 25000;
+
+        document.getElementById('formulario').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var prod = document.getElementById('producto').value;
+            var cant = parseInt(document.getElementById('cantidad').value);
+            if (prod === "1") {
+                cantidad1 += cant;
+                totalNeto += precio1 * cant;
+            } else if (prod === "2") {
+                cantidad2 += cant;
+                totalNeto += precio2 * cant;
+            } else if (prod === "3") {
+                cantidad3 += cant;
+                totalNeto += precio3 * cant;
+            }
+            alert("Producto agregado al carrito!");
+            document.getElementById('cantidad').value = 1;
+        });
+
+        document.getElementById('finalizar').addEventListener('click', function() {
+            var iva = totalNeto * 0.19;
+            var despacho = totalNeto > 50000 ? 0 : 3000;
+            var totalFinal = totalNeto + iva + despacho;
+            var resumen =
+                `<b>Resumen de tu compra:</b><br>
+                <hr>
+                ${producto1}: ${cantidad1} x $${precio1} = $${cantidad1 * precio1}<br>
+                ${producto2}: ${cantidad2} x $${precio2} = $${cantidad2 * precio2}<br>
+                ${producto3}: ${cantidad3} x $${precio3} = $${cantidad3 * precio3}<br>
+                <hr>
+                <b>Total Neto:</b> $${totalNeto}<br>
+                <b>IVA (19%):</b> $${iva.toFixed(0)}<br>
+                <b>Despacho:</b> $${despacho}<br>
+                <hr>
+                <b>Total a pagar:</b> $${totalFinal.toFixed(0)}<br>
+                <br>¡Gracias por tu compra!`;
+            var resumenDiv = document.getElementById('resumen');
+            resumenDiv.innerHTML = resumen;
+            resumenDiv.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
