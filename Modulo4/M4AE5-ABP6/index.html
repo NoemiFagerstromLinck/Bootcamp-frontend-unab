@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍿 Gestión de Cine 🎬</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffeef8, #f0e6ff, #ffffff);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #ffc1e3, #e1c4ff);
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(255, 192, 227, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '✨';
+            position: absolute;
+            font-size: 30px;
+            top: 20px;
+            left: 30px;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        .header::after {
+            content: '💖';
+            position: absolute;
+            font-size: 25px;
+            top: 25px;
+            right: 30px;
+            animation: bounce 1.5s ease-in-out infinite;
+        }
+
+        .header h1 {
+            color: #8b5cf6;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(139, 92, 246, 0.2);
+        }
+
+        .header p {
+            color: #a855f7;
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .function-card {
+            background: linear-gradient(135deg, #ffffff, #fdf4ff);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid #f8d7da;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .function-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 192, 227, 0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        .function-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(255, 192, 227, 0.4);
+            border-color: #ffc1e3;
+        }
+
+        .function-title {
+            color: #8b5cf6;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .function-emoji {
+            font-size: 1.5rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #a855f7;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #f0e6ff;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, #fefefe, #fdf4ff);
+            color: #6b46c1;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #ffc1e3;
+            box-shadow: 0 0 0 3px rgba(255, 192, 227, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ffc1e3, #e1c4ff);
+            color: #8b5cf6;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(255, 192, 227, 0.3);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 192, 227, 0.5);
+            background: linear-gradient(135deg, #ff9dd4, #d1a9ff);
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f0e6ff, #ffeef8);
+            border-radius: 12px;
+            border-left: 4px solid #ffc1e3;
+            min-height: 50px;
+            color: #6b46c1;
+            font-weight: 500;
+            position: relative;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result:empty::before {
+            content: 'El resultado aparecerá aquí...';
+            color: #a855f7;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        .error {
+            background: linear-gradient(135deg, #ffe6e9, #ffd6dd);
+            border-left-color: #ff8fa3;
+            color: #dc2626;
+        }
+
+        .success {
+            background: linear-gradient(135deg, #e6ffe6, #f0fff0);
+            border-left-color: #86efac;
+            color: #059669;
+        }
+
+        .asientos-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .asiento {
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .asiento.disponible {
+            background: linear-gradient(135deg, #86efac, #bbf7d0);
+            color: #059669;
+            border: 2px solid #10b981;
+        }
+
+        .asiento.reservado {
+            background: linear-gradient(135deg, #fca5a5, #fecaca);
+            color: #dc2626;
+            border: 2px solid #ef4444;
+            cursor: not-allowed;
+        }
+
+        .asiento.disponible:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+
+            .asientos-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .floating-heart {
+            position: fixed;
+            font-size: 20px;
+            color: #ffc1e3;
+            pointer-events: none;
+            animation: float-up 3s ease-in-out infinite;
+            z-index: 1000;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        .sala-info {
+            background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .estado-general {
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🍿 Cine Palace 🎬</h1>
+        <p>Sistema de gestión de reservas ✨</p>
+    </div>
+
+    <div class="container">
+        <div class="function-card">
+            <h3 class="function-title">
+                <span class="function-emoji">🎟️</span>
+                Reservar Asiento
+            </h3>
+            <div class="input-group">
+                <label for="salaReserva">Número de sala:</label>
+                <select id="salaReserva">
+                    <option value="1">Sala 1</option>
+                    <option value="2">Sala 2</option>
+                    <option value="3">Sala 3</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="asientoReserva">Asiento (ej: A1, A2, A3...):</label>
+                <input type="text" id="asientoReserva" placeholder="A1" value="A1">
+            </div>
+            <button class="btn" onclick="reservarAsiento()">Reservar Asiento</button>
+            <div class="result" id="resultReserva"></div>
+        </div>
+
+        <div class="function-card">
+            <h3 class="function-title">
+                <span class="function-emoji">❌</span>
+                Cancelar Reserva
+            </h3>
+            <div class="input-group">
+                <label for="salaCancelacion">Número de sala:</label>
+                <select id="salaCancelacion">
+                    <option value="1">Sala 1</option>
+                    <option value="2">Sala 2</option>
+                    <option value="3">Sala 3</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="asientoCancelacion">Asiento a cancelar:</label>
+                <input type="text" id="asientoCancelacion" placeholder="A1" value="A1">
+            </div>
+            <button class="btn" onclick="cancelarReserva()">Cancelar Reserva</button>
+            <div class="result" id="resultCancelacion"></div>
+        </div>
+
+        <div class="function-card">
+            <h3 class="function-title">
+                <span class="function-emoji">📋</span>
+                Estado de Sala
+            </h3>
+            <div class="input-group">
+                <label for="salaConsulta">Número de sala:</label>
+                <select id="salaConsulta">
+                    <option value="1">Sala 1</option>
+                    <option value="2">Sala 2</option>
+                    <option value="3">Sala 3</option>
+                </select>
+            </div>
+            <button class="btn" onclick="mostrarEstadoSala()">Ver Estado de Sala</button>
+            <div class="result" id="resultEstado"></div>
+        </div>
+
+        <div class="function-card">
+            <h3 class="function-title">
+                <span class="function-emoji">🪑</span>
+                Mapa de Asientos
+            </h3>
+            <div class="input-group">
+                <label for="salaMapa">Número de sala:</label>
+                <select id="salaMapa" onchange="mostrarMapaAsientos()">
+                    <option value="1">Sala 1</option>
+                    <option value="2">Sala 2</option>
+                    <option value="3">Sala 3</option>
+                </select>
+            </div>
+            <button class="btn" onclick="mostrarMapaAsientos()">Ver Mapa de Asientos</button>
+            <div class="result" id="resultMapa"></div>
+        </div>
+
+        <div class="function-card">
+            <h3 class="function-title">
+                <span class="function-emoji">📊</span>
+                Estado General del Cine
+            </h3>
+            <p style="color: #a855f7; margin-bottom: 15px; text-align: center;">
+                Visualiza el estado completo de todas las salas
+            </p>
+            <button class="btn" onclick="mostrarEstadoGeneral()">Ver Estado General</button>
+            <div class="result estado-general" id="resultGeneral"></div>
+        </div>
+
+        <div class="function-card">
+            <h3 class="function-title">
+                <span class="function-emoji">🎪</span>
+                Simulación Completa
+            </h3>
+            <p style="color: #a855f7; margin-bottom: 15px; text-align: center;">
+                Ejecuta una demostración con datos de prueba
+            </p>
+            <button class="btn" onclick="ejecutarSimulacion()">Ejecutar Simulación</button>
+            <div class="result" id="resultSimulacion"></div>
+        </div>
+    </div>
+
+    <script src="gestion-cine.js"></script>
+    
+    <script>
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💖';
+            heart.className = 'floating-heart';
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = window.innerHeight + 'px';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 3000);
+        }
+
+        setInterval(createFloatingHeart, 3000);
+
+        function mostrarResultado(elementId, mensaje, isError = false, isSuccess = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = mensaje;
+            element.className = 'result';
+            
+            if (isError) {
+                element.classList.add('error');
+            } else if (isSuccess) {
+                element.classList.add('success');
+            }
+        }
+
+        function reservarAsiento() {
+            try {
+                const sala = parseInt(document.getElementById('salaReserva').value);
+                const asiento = document.getElementById('asientoReserva').value.trim().toUpperCase();
+                
+                if (!asiento) {
+                    throw new Error('Por favor ingresa un asiento válido');
+                }
+                
+                const resultado = Cine.reservarAsiento(sala, asiento);
+                
+                mostrarResultado('resultReserva', 
+                    `<strong>${resultado.exito ? 'Reserva Exitosa' : 'Error en Reserva'}</strong><br>
+                    ${resultado.mensaje}`, 
+                    !resultado.exito, resultado.exito);
+                    
+                if (resultado.exito) {
+                    const salaActual = parseInt(document.getElementById('salaMapa').value);
+                    if (salaActual === sala) {
+                        mostrarMapaAsientos();
+                    }
+                }
+            } catch (error) {
+                mostrarResultado('resultReserva', `Error: ${error.message}`, true);
+            }
+        }
+
+        function cancelarReserva() {
+            try {
+                const sala = parseInt(document.getElementById('salaCancelacion').value);
+                const asiento = document.getElementById('asientoCancelacion').value.trim().toUpperCase();
+                
+                if (!asiento) {
+                    throw new Error('Por favor ingresa un asiento válido');
+                }
+                
+                const resultado = Cine.cancelarReserva(sala, asiento);
+                
+                mostrarResultado('resultCancelacion', 
+                    `<strong>${resultado.exito ? 'Cancelación Exitosa' : 'Error en Cancelación'}</strong><br>
+                    ${resultado.mensaje}`, 
+                    !resultado.exito, resultado.exito);
+                    
+                if (resultado.exito) {
+                    const salaActual = parseInt(document.getElementById('salaMapa').value);
+                    if (salaActual === sala) {
+                        mostrarMapaAsientos();
+                    }
+                }
+            } catch (error) {
+                mostrarResultado('resultCancelacion', `Error: ${error.message}`, true);
+            }
+        }
+
+        function mostrarEstadoSala() {
+            try {
+                const sala = parseInt(document.getElementById('salaConsulta').value);
+                const estado = Cine.mostrarDisponibles(sala);
+                
+                if (estado.error) {
+                    mostrarResultado('resultEstado', `Error: ${estado.error}`, true);
+                    return;
+                }
+                
+                mostrarResultado('resultEstado', 
+                    `<strong>Estado de la Sala ${sala}</strong><br><br>
+                    <div class="sala-info">
+                        <strong>Capacidad Total:</strong> ${estado.capacidadTotal} asientos<br>
+                        <strong>Disponibles:</strong> ${estado.totalDisponibles} asientos<br>
+                        <strong>Reservados:</strong> ${estado.totalReservados} asientos
+                    </div>
+                    <strong>Asientos Disponibles:</strong><br>
+                    ${estado.disponibles.length > 0 ? estado.disponibles.join(', ') : 'Ninguno'}<br><br>
+                    <strong>Asientos Reservados:</strong><br>
+                    ${estado.reservados.length > 0 ? estado.reservados.join(', ') : 'Ninguno'}`, 
+                    false, true);
+            } catch (error) {
+                mostrarResultado('resultEstado', `Error: ${error.message}`, true);
+            }
+        }
+
+        function mostrarMapaAsientos() {
+            try {
+                const sala = parseInt(document.getElementById('salaMapa').value);
+                const estado = Cine.mostrarDisponibles(sala);
+                
+                if (estado.error) {
+                    mostrarResultado('resultMapa', `Error: ${estado.error}`, true);
+                    return;
+                }
+                
+                let mapaHTML = `<strong>Mapa de Asientos - Sala ${sala}</strong><br><br>`;
+                mapaHTML += `<div class="asientos-grid">`;
+                
+                for (let i = 1; i <= estado.capacidadTotal; i++) {
+                    const asiento = `A${i}`;
+                    const estaReservado = estado.reservados.includes(asiento);
+                    const clase = estaReservado ? 'reservado' : 'disponible';
+                    const texto = estaReservado ? '🚫' : '✅';
+                    
+                    mapaHTML += `<div class="asiento ${clase}" onclick="seleccionarAsiento('${asiento}')">${asiento} ${texto}</div>`;
+                }
+                
+                mapaHTML += `</div>`;
+                mapaHTML += `<div class="sala-info">`;
+                mapaHTML += `✅ Disponible: ${estado.totalDisponibles} | 🚫 Reservado: ${estado.totalReservados}`;
+                mapaHTML += `</div>`;
+                
+                mostrarResultado('resultMapa', mapaHTML, false, true);
+            } catch (error) {
+                mostrarResultado('resultMapa', `Error: ${error.message}`, true);
+            }
+        }
+
+        function seleccionarAsiento(asiento) {
+            document.getElementById('asientoReserva').value = asiento;
+            document.getElementById('asientoCancelacion').value = asiento;
+        }
+
+        function mostrarEstadoGeneral() {
+            try {
+                const estadoGeneral = Cine.obtenerEstadoGeneral();
+                
+                let html = `<strong>${estadoGeneral.nombre}</strong><br><br>`;
+                html += `<strong>Total de Salas:</strong> ${estadoGeneral.totalSalas}<br><br>`;
+                
+                for (let numeroSala in estadoGeneral.salas) {
+                    const sala = estadoGeneral.salas[numeroSala];
+                    html += `<div class="sala-info">`;
+                    html += `<strong>Sala ${numeroSala}</strong><br>`;
+                    html += `Capacidad: ${sala.capacidadTotal} | `;
+                    html += `Disponibles: ${sala.totalDisponibles} | `;
+                    html += `Reservados: ${sala.totalReservados}<br>`;
+                    html += `Ocupación: ${((sala.totalReservados / sala.capacidadTotal) * 100).toFixed(1)}%`;
+                    html += `</div>`;
+                }
+                
+                mostrarResultado('resultGeneral', html, false, true);
+            } catch (error) {
+                mostrarResultado('resultGeneral', `Error: ${error.message}`, true);
+            }
+        }
+
+        function ejecutarSimulacion() {
+            let html = `<strong>Simulación Completa del Sistema de Cine</strong><br><br>`;
+            
+            try {
+                html += `<strong>1. Reservando asientos...</strong><br>`;
+                
+                let resultado = Cine.reservarAsiento(1, "A1");
+                html += `• ${resultado.mensaje}<br>`;
+                
+                resultado = Cine.reservarAsiento(1, "A5");
+                html += `• ${resultado.mensaje}<br>`;
+                
+                resultado = Cine.reservarAsiento(2, "A3");
+                html += `• ${resultado.mensaje}<br>`;
+                
+                resultado = Cine.reservarAsiento(1, "A10");
+                html += `• ${resultado.mensaje}<br><br>`;
+                
+                html += `<strong>2. Intentando reservar asiento ocupado...</strong><br>`;
+                resultado = Cine.reservarAsiento(1, "A1");
+                html += `• ${resultado.mensaje}<br><br>`;
+                
+                html += `<strong>3. Cancelando una reserva...</strong><br>`;
+                resultado = Cine.cancelarReserva(1, "A5");
+                html += `• ${resultado.mensaje}<br><br>`;
+                
+                html += `<strong>4. Estado final de las salas:</strong><br>`;
+                for (let i = 1; i <= 3; i++) {
+                    const estado = Cine.mostrarDisponibles(i);
+                    html += `• Sala ${i}: ${estado.totalReservados}/${estado.capacidadTotal} reservados<br>`;
+                }
+                
+                html += `<br><strong>Simulación completada exitosamente</strong>`;
+                
+                mostrarResultado('resultSimulacion', html, false, true);
+                
+                setTimeout(() => {
+                    mostrarMapaAsientos();
+                }, 500);
+                
+            } catch (error) {
+                mostrarResultado('resultSimulacion', `Error en simulación: ${error.message}`, true);
+            }
+        }
+
+        window.addEventListener('load', function() {
+            setTimeout(() => createFloatingHeart(), 500);
+            setTimeout(() => createFloatingHeart(), 1000);
+            setTimeout(() => createFloatingHeart(), 1500);
+            
+            mostrarMapaAsientos();
+        });
+    </script>
+</body>
+</html>
