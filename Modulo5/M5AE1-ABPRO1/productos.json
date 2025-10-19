@@ -1,0 +1,208 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "MacBook Pro M3 14\"",
+      "price": 1299990,
+      "stock": 8,
+      "category": "laptops",
+      "description": "Laptop profesional con chip M3 y pantalla Retina",
+      "image": "fas fa-laptop",
+      "brand": "Apple"
+    },
+    {
+      "id": 2,
+      "name": "iPhone 15 Pro Max",
+      "price": 899990,
+      "stock": 15,
+      "category": "smartphones",
+      "description": "Smartphone premium con cámara profesional",
+      "image": "fas fa-mobile-alt",
+      "brand": "Apple"
+    },
+    {
+      "id": 3,
+      "name": "iPad Air 5ta Gen",
+      "price": 549990,
+      "stock": 3,
+      "category": "tablets",
+      "description": "Tablet versátil para trabajo y entretenimiento",
+      "image": "fas fa-tablet-alt",
+      "brand": "Apple"
+    },
+    {
+      "id": 4,
+      "name": "Samsung Galaxy S24 Ultra",
+      "price": 799990,
+      "stock": 12,
+      "category": "smartphones",
+      "description": "Smartphone Android flagship con S Pen",
+      "image": "fas fa-mobile-alt",
+      "brand": "Samsung"
+    },
+    {
+      "id": 5,
+      "name": "Dell XPS 13 Plus",
+      "price": 999990,
+      "stock": 6,
+      "category": "laptops",
+      "description": "Ultrabook premium para profesionales",
+      "image": "fas fa-laptop",
+      "brand": "Dell"
+    },
+    {
+      "id": 6,
+      "name": "AirPods Pro 2da Gen",
+      "price": 199990,
+      "stock": 1,
+      "category": "audio",
+      "description": "Auriculares inalámbricos con cancelación de ruido",
+      "image": "fas fa-headphones",
+      "brand": "Apple"
+    },
+    {
+      "id": 7,
+      "name": "Sony WH-1000XM5",
+      "price": 299990,
+      "stock": 0,
+      "category": "audio",
+      "description": "Audífonos over-ear con la mejor cancelación de ruido",
+      "image": "fas fa-headphones",
+      "brand": "Sony"
+    },
+    {
+      "id": 8,
+      "name": "Nintendo Switch OLED",
+      "price": 349990,
+      "stock": 7,
+      "category": "gaming",
+      "description": "Consola híbrida con pantalla OLED mejorada",
+      "image": "fas fa-gamepad",
+      "brand": "Nintendo"
+    },
+    {
+      "id": 9,
+      "name": "Apple Watch Series 9",
+      "price": 399990,
+      "stock": 2,
+      "category": "wearables",
+      "description": "Reloj inteligente con GPS y monitoreo de salud",
+      "image": "fas fa-clock",
+      "brand": "Apple"
+    },
+    {
+      "id": 10,
+      "name": "Samsung 4K Smart TV 55\"",
+      "price": 649990,
+      "stock": 4,
+      "category": "tv",
+      "description": "Televisor 4K con tecnología QLED",
+      "image": "fas fa-tv",
+      "brand": "Samsung"
+    },
+    {
+      "id": 11,
+      "name": "HP Pavilion Gaming",
+      "price": 789990,
+      "stock": 0,
+      "category": "laptops",
+      "description": "Laptop gaming con RTX 4060 y procesador Intel i7",
+      "image": "fas fa-laptop",
+      "brand": "HP"
+    },
+    {
+      "id": 12,
+      "name": "Logitech MX Master 3S",
+      "price": 89990,
+      "stock": 1,
+      "category": "accessories",
+      "description": "Mouse ergonómico para profesionales",
+      "image": "fas fa-computer-mouse",
+      "brand": "Logitech"
+    },
+    {
+      "id": 13,
+      "name": "Canon EOS R6 Mark II",
+      "price": 1599990,
+      "stock": 3,
+      "category": "cameras",
+      "description": "Cámara mirrorless profesional con video 4K",
+      "image": "fas fa-camera",
+      "brand": "Canon"
+    },
+    {
+      "id": 14,
+      "name": "SteelSeries Arctis 7P",
+      "price": 149990,
+      "stock": 9,
+      "category": "gaming",
+      "description": "Auriculares gaming inalámbricos",
+      "image": "fas fa-headset",
+      "brand": "SteelSeries"
+    },
+    {
+      "id": 15,
+      "name": "Microsoft Surface Pro 9",
+      "price": 999990,
+      "stock": 2,
+      "category": "tablets",
+      "description": "Tablet 2 en 1 con Windows 11 Pro",
+      "image": "fas fa-tablet-alt",
+      "brand": "Microsoft"
+    }
+  ],
+  "categories": [
+    {
+      "id": "laptops",
+      "name": "Laptops",
+      "icon": "fas fa-laptop"
+    },
+    {
+      "id": "smartphones",
+      "name": "Smartphones",
+      "icon": "fas fa-mobile-alt"
+    },
+    {
+      "id": "tablets",
+      "name": "Tablets",
+      "icon": "fas fa-tablet-alt"
+    },
+    {
+      "id": "audio",
+      "name": "Audio",
+      "icon": "fas fa-headphones"
+    },
+    {
+      "id": "gaming",
+      "name": "Gaming",
+      "icon": "fas fa-gamepad"
+    },
+    {
+      "id": "wearables",
+      "name": "Wearables",
+      "icon": "fas fa-clock"
+    },
+    {
+      "id": "tv",
+      "name": "Televisores",
+      "icon": "fas fa-tv"
+    },
+    {
+      "id": "accessories",
+      "name": "Accesorios",
+      "icon": "fas fa-computer-mouse"
+    },
+    {
+      "id": "cameras",
+      "name": "Cámaras",
+      "icon": "fas fa-camera"
+    }
+  ],
+  "config": {
+    "currency": "CLP",
+    "lowStockThreshold": 4,
+    "adminEmail": "admin@tecnochile.cl",
+    "storeName": "Tecno Chile",
+    "lastUpdated": "2025-10-12"
+  }
+}
