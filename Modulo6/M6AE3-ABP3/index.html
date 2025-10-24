@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controles Radio y Select - Vue.js</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <h1>Aplicación Vue.js - Controles Radio y Select</h1>
+            
+            <div class="section">
+                <h2>Tipo de Estudios</h2>
+                <div class="radio-group">
+                    <label class="radio-item" for="media">
+                        <input type="radio" value="media" v-model="estudios" id="media">
+                        <span class="radio-text">Educación Media</span>
+                    </label>
+                    <label class="radio-item" for="universitario">
+                        <input type="radio" value="universitario" v-model="estudios" id="universitario">
+                        <span class="radio-text">Universitario</span>
+                    </label>
+                    <label class="radio-item" for="magister">
+                        <input type="radio" value="magister" v-model="estudios" id="magister">
+                        <span class="radio-text">Magíster</span>
+                    </label>
+                    <label class="radio-item" for="doctorado">
+                        <input type="radio" value="doctorado" v-model="estudios" id="doctorado">
+                        <span class="radio-text">Doctorado</span>
+                    </label>
+                </div>
+                <div class="result">
+                    <p><strong>Tipo de estudios seleccionado:</strong> {{ estudiosTexto }}</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Día de la Semana</h2>
+                <div class="select-group">
+                    <select v-model="diaSeleccionado" class="select-control">
+                        <option value="" disabled>-- Seleccione un día de la semana --</option>
+                        <option value="lunes">Lunes</option>
+                        <option value="martes">Martes</option>
+                        <option value="miercoles">Miércoles</option>
+                        <option value="jueves">Jueves</option>
+                        <option value="viernes">Viernes</option>
+                        <option value="sabado">Sábado</option>
+                        <option value="domingo">Domingo</option>
+                    </select>
+                </div>
+                <div class="result">
+                    <p v-if="diaSeleccionado"><strong>Día seleccionado:</strong> {{ diaTexto }}</p>
+                    <p v-else class="no-selection">No has seleccionado ningún día</p>
+                </div>
+            </div>
+
+            <div class="resumen-section">
+                <h2>Resumen del Formulario</h2>
+                <div class="resumen-content">
+                    <div class="resumen-item">
+                        <span class="resumen-label">Tipo de estudios:</span>
+                        <span class="resumen-value">{{ estudiosTexto }}</span>
+                    </div>
+                    <div class="resumen-item">
+                        <span class="resumen-label">Día de la semana:</span>
+                        <span class="resumen-value" v-if="diaSeleccionado">{{ diaTexto }}</span>
+                        <span class="resumen-value no-selected" v-else>No seleccionado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
