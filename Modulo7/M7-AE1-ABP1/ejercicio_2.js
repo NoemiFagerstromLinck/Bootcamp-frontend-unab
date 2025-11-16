@@ -46,11 +46,11 @@ createApp({
   data() {
     return {
       personajes: [
-        { id: '1', nombre: 'pikachu', descripcion: 'lorem ipsum uhiuhiuhihoi' },
-        { id: '2', nombre: 'kakuna', descripcion: 'lorem ipsum uhiuhiuhihoi' },
-        { id: '3', nombre: 'beedrill', descripcion: 'lorem ipsum uhiuhiuhihoi' },
-        { id: '4', nombre: 'metapod', descripcion: 'lorem ipsum uhiuhiuhihoi' },
-        { id: '5', nombre: 'rattata', descripcion: 'lorem ipsum uhiuhiuhihoi' }
+        { id: '1', nombre: 'pikachu', descripcion: 'Almacena electricidad en las bolsas de sus mejillas. Las descarga cuando está en peligro.' },
+        { id: '2', nombre: 'kakuna', descripcion: 'Permanece casi inmóvil. Se endurece preparándose para la evolución.' },
+        { id: '3', nombre: 'beedrill', descripcion: 'Vuela a gran velocidad. Lucha con los aguijones venenosos de sus brazos.' },
+        { id: '4', nombre: 'metapod', descripcion: 'Su caparazón es duro como el hierro. Apenas puede moverse.' },
+        { id: '5', nombre: 'rattata', descripcion: 'Vive donde sea. Es muy cauto y huye al menor ruido.' }
       ]
     }
   },
