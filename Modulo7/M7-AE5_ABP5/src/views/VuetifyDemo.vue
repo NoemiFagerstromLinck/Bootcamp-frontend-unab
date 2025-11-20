@@ -243,8 +243,9 @@ export default {
         this.pokemon = response.data
         const type = this.pokemon.types?.[0]?.type?.name || ''
         this.dominantType = type
-        this.dominantColor = VTYPE_COLORS[type] || '#764ba2'
+        this.dominantColor = VTYPE_COLORS[type] || '#667eea'
         this.fetchMoveDetails()
+        this.fetchPokemonDescription()
       } catch (err) {
         this.error = 'No se encontró el Pokémon. Intenta con otro nombre.'
       } finally {
@@ -269,11 +270,32 @@ export default {
             type: mv.type?.name,
             damageClass: mv.damage_class?.name,
             damageClassIcon: mv.damage_class?.name === 'physical' ? 'mdi-arm-flex' : mv.damage_class?.name === 'special' ? 'mdi-auto-fix' : 'mdi-shield',
-            effect: (mv.effect_entries?.[0]?.short_effect || '').replace(/\n/g, ' ')
+            effect: (() => {
+              const entries = mv.effect_entries || []
+              const esEntry = entries.find(e => e.language.name === 'es')
+              const enEntry = entries.find(e => e.language.name === 'en')
+              const chosen = esEntry || enEntry || entries[0]
+              return chosen ? (chosen.short_effect || chosen.effect || '').replace(/\n/g, ' ') : ''
+            })()
           }
         })
       } finally {
         this.moveDetailsLoading = false
+      }
+    }
+    ,
+    async fetchPokemonDescription() {
+      if (!this.pokemon) return
+      try {
+        const speciesUrl = this.pokemon.species?.url
+        if (!speciesUrl) return
+        const { data } = await axios.get(speciesUrl)
+        const entries = data.flavor_text_entries || []
+        const esEntry = entries.find(e => e.language.name === 'es')
+        const enEntry = entries.find(e => e.language.name === 'en')
+        const chosen = esEntry || enEntry || entries[0]
+        this.pokemonDescription = chosen ? chosen.flavor_text.replace(/\n|\f/g, ' ') : ''
+      } catch (e) {
       }
     }
     ,

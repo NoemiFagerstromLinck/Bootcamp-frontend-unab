@@ -16,10 +16,8 @@ export const auth = getAuth(app)
 export function checkFirebase() {
   try {
     const opts = app.options
-    console.log('[Firebase] Inicializado', !!opts?.projectId ? `(${opts.projectId})` : '')
     return true
   } catch (e) {
-    console.error('[Firebase] Error de inicialización', e)
     return false
   }
 }

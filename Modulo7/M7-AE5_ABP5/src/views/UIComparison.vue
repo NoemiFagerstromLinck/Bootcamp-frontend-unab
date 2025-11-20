@@ -8,8 +8,7 @@
         </p>
       </div>
 
-      <!-- Navegación a las demos -->
-      <div class="row mb-5">
+      <div class="row g-4 mb-5">
         <div class="col-md-6 col-lg-3 mb-3" v-for="lib in libraries" :key="lib.id">
           <div class="card h-100 shadow-sm library-card" :class="lib.color">
             <div class="card-body text-center">
@@ -24,8 +23,7 @@
         </div>
       </div>
 
-      <!-- Tabla comparativa -->
-      <div class="card shadow mb-5">
+      <div class="card shadow-sm mb-4">
         <div class="card-header bg-dark text-white">
           <h4 class="mb-0">
             <i class="bi bi-clipboard-data me-2"></i>
@@ -97,8 +95,7 @@
         </div>
       </div>
 
-      <!-- Conclusión -->
-      <div class="card shadow mt-5">
+      <div class="card shadow-sm mb-4">
         <div class="card-header bg-primary text-white">
           <h4 class="mb-0">
             <i class="bi bi-trophy me-2"></i>
@@ -156,8 +153,7 @@
         </div>
       </div>
 
-      <!-- Botón volver -->
-      <div class="text-center mt-5">
+      <div class="text-center">
         <router-link to="/home" class="btn btn-lg btn-primary">
           <i class="bi bi-arrow-left me-2"></i>
           Volver al inicio

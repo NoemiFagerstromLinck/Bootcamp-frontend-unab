@@ -22,7 +22,7 @@
       <div class="container">
         <div class="columns is-centered">
           <div class="column is-8-desktop is-10-tablet">
-            <b-box>
+            <div class="box">
               <div class="has-text-centered mb-5">
                 <h1 class="title is-3">
                   <span class="icon-text">
@@ -58,7 +58,7 @@
               </div>
 
               <b-message v-if="!pokemon && !loading" type="is-info" class="mt-5">
-                <p class="mb-3"><strong>💡 Sugerencias:</strong></p>
+                <p class="mb-3"><strong>Sugerencias:</strong></p>
                 <b-taglist>
                   <b-tag
                     v-for="suggestion in suggestions"
@@ -73,13 +73,13 @@
                   </b-tag>
                 </b-taglist>
               </b-message>
-            </b-box>
+            </div>
           </div>
         </div>
 
         <div v-if="pokemon" class="columns is-centered mt-5">
           <div class="column is-8-desktop is-10-tablet">
-            <b-box :style="boxStyle" class="has-background-light">
+            <div class="box has-background-light" :style="boxStyle">
               <div class="has-text-centered mb-4">
                 <h2 class="title is-4">
                   <span class="icon-text">
@@ -95,6 +95,7 @@
                 <figure class="image is-inline-block" style="width: 200px;">
                   <img :src="photoUrl" :alt="pokemon.name">
                 </figure>
+                <p v-if="pokemonDescription" class="has-text-grey is-size-7 mt-3 px-4">{{ pokemonDescription }}</p>
               </div>
 
               <hr>
@@ -143,7 +144,7 @@
                   <ul>
                     <li v-for="detail in moveDetails" :key="detail.name" class="mb-3">
                       <div class="is-flex is-align-items-center is-justify-content-space-between">
-                        <span class="tag is-rounded is-capitalized" :style="{ backgroundColor: BTYPE_COLORS[detail.type] || '#888', color: '#fff' }">
+                        <span class="tag is-rounded is-capitalized" :style="{ backgroundColor: typeColors[detail.type] || '#888', color: '#fff' }">
                           <i :class="detail.damageClass === 'physical' ? 'bi bi-hand-index' : detail.damageClass === 'special' ? 'bi bi-magic' : 'bi bi-shield'" class="mr-1"></i>
                           {{ detail.type }}
                         </span>
@@ -166,7 +167,7 @@
                   </ul>
                 </div>
               </div>
-            </b-box>
+            </div>
           </div>
         </div>
 
@@ -208,11 +209,13 @@ export default {
       allPokemonNames: [],
       filteredSuggestions: [],
       dominantType: '',
-      dominantColor: '#ddd',
+      dominantColor: '#667eea',
       moveDetailsLoading: false,
       moveDetails: [],
       abilityDetails: {},
-      abilityLoading: false
+      abilityLoading: false,
+      pokemonDescription: '',
+      typeColors: BTYPE_COLORS
     }
   },
   mounted() {
@@ -258,8 +261,9 @@ export default {
         this.pokemon = response.data
         const type = this.pokemon.types?.[0]?.type?.name || ''
         this.dominantType = type
-        this.dominantColor = BTYPE_COLORS[type] || '#999'
+        this.dominantColor = BTYPE_COLORS[type] || '#667eea'
         this.fetchMoveDetails()
+        this.fetchPokemonDescription()
       } catch (err) {
         this.error = 'No se encontró el Pokémon. Intenta con otro nombre.'
       } finally {
@@ -283,12 +287,33 @@ export default {
             pp: mv.pp,
             type: mv.type?.name,
             damageClass: mv.damage_class?.name,
-            effect: (mv.effect_entries?.[0]?.short_effect || '').replace(/\n/g, ' '),
+            effect: (() => {
+              const entries = mv.effect_entries || []
+              const esEntry = entries.find(e => e.language.name === 'es')
+              const enEntry = entries.find(e => e.language.name === 'en')
+              const chosen = esEntry || enEntry || entries[0]
+              return chosen ? (chosen.short_effect || chosen.effect || '').replace(/\n/g, ' ') : ''
+            })(),
             show: false
           }
         })
       } finally {
         this.moveDetailsLoading = false
+      }
+    }
+    ,
+    async fetchPokemonDescription() {
+      if (!this.pokemon) return
+      try {
+        const speciesUrl = this.pokemon.species?.url
+        if (!speciesUrl) return
+        const { data } = await axios.get(speciesUrl)
+        const entries = data.flavor_text_entries || []
+        const esEntry = entries.find(e => e.language.name === 'es')
+        const enEntry = entries.find(e => e.language.name === 'en')
+        const chosen = esEntry || enEntry || entries[0]
+        this.pokemonDescription = chosen ? chosen.flavor_text.replace(/\n|\f/g, ' ') : ''
+      } catch (e) {
       }
     }
     ,

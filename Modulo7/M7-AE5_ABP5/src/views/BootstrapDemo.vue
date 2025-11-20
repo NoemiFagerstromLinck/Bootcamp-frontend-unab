@@ -1,10 +1,9 @@
 <template>
   <div class="bootstrap-pokeguia">
-    <!-- Navbar Bootstrap -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
       <div class="container-fluid">
         <span class="navbar-brand">
-          🎯 Pokeguía - Bootstrap 5
+          Pokeguía - Bootstrap 5
         </span>
         <div class="d-flex gap-2">
           <router-link to="/home" class="btn btn-outline-light btn-sm">Home Original</router-link>
@@ -14,13 +13,11 @@
     </nav>
 
     <div class="container py-4">
-      <!-- Header -->
       <div class="text-center mb-4">
         <h1 class="display-5">Pokeguía con Bootstrap 5</h1>
         <p class="text-muted">Misma funcionalidad, estilo Bootstrap</p>
       </div>
 
-      <!-- Buscador Bootstrap -->
       <div class="card shadow-sm mb-4">
         <div class="card-body">
           <div class="row g-3">
@@ -37,7 +34,6 @@
               />
               <small class="form-text text-muted">Intenta con: pikachu, charizard, mewtwo</small>
               
-              <!-- Dropdown de sugerencias -->
               <div v-if="filteredSuggestions.length > 0 && query" class="list-group position-absolute w-100 shadow" style="z-index: 1000; max-height: 300px; overflow-y: auto;">
                 <button 
                   v-for="suggestion in filteredSuggestions" 
@@ -63,15 +59,12 @@
         </div>
       </div>
 
-      <!-- Error Alert Bootstrap -->
       <div v-if="error" class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>Error:</strong> {{ error }}
         <button type="button" class="btn-close" @click="error = ''" aria-label="Close"></button>
       </div>
 
-      <!-- Resultados con Bootstrap Cards -->
       <div v-if="pokemon" class="row g-4">
-        <!-- Card Imagen -->
         <div class="col-lg-4">
           <div class="card h-100 shadow" :style="cardStyle">
             <div class="card-body text-center">
@@ -82,6 +75,7 @@
                 style="max-height: 200px"
               />
               <h2 class="card-title text-capitalize h3">{{ pokemon.name }}</h2>
+              <p v-if="pokemonDescription" class="text-muted small">{{ pokemonDescription }}</p>
               <p class="card-text">
                 <span class="badge bg-primary">ID: {{ pokemon.id }}</span>
                 <span class="badge bg-success ms-2">Peso: {{ pokemon.weight / 10 }} kg</span>
@@ -92,7 +86,6 @@
           </div>
         </div>
 
-        <!-- Card Habilidades -->
         <div class="col-lg-4">
           <div class="card h-100 shadow">
             <div class="card-header bg-success text-white">
@@ -115,7 +108,6 @@
           </div>
         </div>
 
-        <!-- Card Movimientos -->
         <div class="col-lg-4">
           <div class="card h-100 shadow">
             <div class="card-header bg-info text-white">
@@ -134,7 +126,7 @@
                   >
                     <div class="d-flex justify-content-between align-items-start">
                       <div class="d-flex align-items-center gap-2">
-                        <span class="move-type-pill" :style="{ backgroundColor: TYPE_COLORS[detail.type] || '#999' }">
+                        <span class="move-type-pill" :style="{ backgroundColor: typeColors[detail.type] || '#999' }">
                           <i :class="detail.damageClassIcon" class="me-1"></i>{{ detail.type }}
                         </span>
                         <strong class="text-capitalize">{{ detail.name }}</strong>
@@ -162,13 +154,10 @@
         </div>
       </div>
 
-      <!-- Estado inicial -->
       <div v-else-if="!loading" class="text-center py-5">
-        <div class="display-1 text-muted">🔍</div>
         <p class="lead">Busca un Pokémon para comenzar</p>
       </div>
 
-      <!-- Loading -->
       <div v-if="loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Cargando...</span>
@@ -181,6 +170,7 @@
 
 <script>
 import axios from 'axios'
+import { pokemonData } from '../data/pokemon'
 
 const TYPE_COLORS = {
   grass: '#78C850', fire: '#F08030', water: '#6890F0', electric: '#F8D030', ice: '#98D8D8', ground: '#E0C068',
@@ -203,7 +193,9 @@ export default {
       moveDetailsLoading: false,
       moveDetails: [],
       abilityDetails: {},
-      abilityLoading: false
+      abilityLoading: false,
+      pokemonDescription: '',
+      typeColors: TYPE_COLORS
     }
   },
   computed: {
@@ -229,6 +221,9 @@ export default {
         background: `linear-gradient(145deg, ${this.dominantColor}22, #ffffff)`
       }
     }
+  },
+  mounted() {
+    this.allPokemonNames = pokemonData[0].pokemones.map(p => p.nombre)
   },
   created() {
     this.searchPokemon()
@@ -261,12 +256,11 @@ export default {
         const url = `https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(this.query.toLowerCase())}`
         const { data } = await axios.get(url)
         this.pokemon = data
-        // Tipo dominante y color
         const type = data.types?.[0]?.type?.name || ''
         this.dominantType = type
         this.dominantColor = TYPE_COLORS[type] || '#666'
-        // Cargar detalles de movimientos (primeros 10)
         this.fetchMoveDetails()
+        this.fetchPokemonDescription()
       } catch (e) {
         this.pokemon = null
         this.error = `No se encontró el Pokémon "${this.query}". Verifica el nombre e intenta nuevamente.`
@@ -294,7 +288,13 @@ export default {
             type: mv.type?.name,
             damageClass: mv.damage_class?.name,
             damageClassIcon: mv.damage_class?.name === 'physical' ? 'bi bi-hand-index' : mv.damage_class?.name === 'special' ? 'bi bi-magic' : 'bi bi-shield',
-            effect: (mv.effect_entries?.[0]?.short_effect || '').replace(/\n/g, ' '),
+            effect: (() => {
+              const entries = mv.effect_entries || []
+              const esEntry = entries.find(e => e.language.name === 'es')
+              const enEntry = entries.find(e => e.language.name === 'en')
+              const chosen = esEntry || enEntry || entries[0]
+              return chosen ? (chosen.short_effect || chosen.effect || '').replace(/\n/g, ' ') : ''
+            })(),
             show: false
           }
         })
@@ -302,14 +302,26 @@ export default {
         this.moveDetailsLoading = false
       }
     },
+    async fetchPokemonDescription() {
+      if (!this.pokemon) return
+      try {
+        const speciesUrl = this.pokemon.species?.url
+        if (!speciesUrl) return
+        const { data } = await axios.get(speciesUrl)
+        const entries = data.flavor_text_entries || []
+        const esEntry = entries.find(e => e.language.name === 'es')
+        const enEntry = entries.find(e => e.language.name === 'en')
+        const chosen = esEntry || enEntry || entries[0]
+        this.pokemonDescription = chosen ? chosen.flavor_text.replace(/\n|\f/g, ' ') : ''
+      } catch (e) {
+      }
+    },
     async toggleAbility(ability) {
       if (this.abilityDetails[ability]) {
-        // ya cargada -> alternar borrado / mantener (solo tooltip)
         return
       }
       this.abilityLoading = true
       try {
-        // Encontrar URL de la habilidad en la API principal (abilities array contiene objetos ability con url)
         const abilObj = this.pokemon.abilities.find(a => a.ability.name === ability)
         if (!abilObj) return
         const { data } = await axios.get(abilObj.ability.url)

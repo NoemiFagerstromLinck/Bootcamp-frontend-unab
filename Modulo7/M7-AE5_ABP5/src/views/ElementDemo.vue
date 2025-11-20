@@ -92,6 +92,10 @@
               <el-avatar :src="photoUrl" :size="200" class="mb-4" />
             </div>
 
+            <div v-if="pokemonDescription" class="pokemon-description text-center mb-3">
+              <p class="text-muted">{{ pokemonDescription }}</p>
+            </div>
+
             <el-divider />
 
             <div class="section mb-4">
@@ -103,18 +107,20 @@
                 <el-tooltip
                   v-for="ability in abilities"
                   :key="ability"
-                  :content="abilityDetails[ability]?.effect || 'Click para ver detalle'"
+                  :content="abilityDetails[ability]?.effect || (abilityLoadingMap[ability] ? 'Cargando...' : 'Hover para ver')"
                   placement="top"
                 >
                   <el-tag
                     type="primary"
                     size="large"
                     class="ability-tag text-capitalize"
+                    @mouseenter="fetchAbilityDetail(ability)"
                     @click="fetchAbilityDetail(ability)"
                     :effect="abilityDetails[ability] ? 'dark' : 'light'"
-                    style="cursor: pointer;"
+                    style="cursor: pointer; min-width:90px; text-align:center;"
                   >
-                    {{ ability }}
+                    <span v-if="!abilityLoadingMap[ability]">{{ ability }}</span>
+                    <span v-else>...</span>
                   </el-tag>
                 </el-tooltip>
               </div>
@@ -132,29 +138,44 @@
                   <el-icon style="font-size:32px; color:#E6A23C"><Lightning /></el-icon>
                   <p class="text-muted">Cargando detalles...</p>
                 </div>
-                <el-collapse v-else class="move-collapse">
-                  <el-collapse-item v-for="detail in moveDetails" :key="detail.name" :name="detail.name">
-                    <template #title>
-                      <div class="move-header">
-                        <el-tag :style="{ backgroundColor: ETYPE_COLORS[detail.type] || '#999', color:'#fff', border:'none' }" size="small" class="mr-2">
-                          <el-icon class="mr-1">
-                            <Lightning v-if="detail.damageClass === 'physical'" />
-                            <Sunny v-else-if="detail.damageClass === 'special'" />
-                            <Medal v-else />
-                          </el-icon>
-                          {{ detail.type }}
-                        </el-tag>
-                        <span class="text-capitalize">{{ detail.name }}</span>
+                <template v-else>
+                  <div v-if="!moveDetails.length && moves.length" class="fallback-moves">
+                    <p class="small text-muted mb-2">Mostrando nombres simples (detalle no cargado). Fallback temporal.</p>
+                    <el-tag
+                      v-for="m in moves"
+                      :key="m"
+                      size="large"
+                      type="info"
+                      class="mb-1 text-capitalize"
+                      style="margin:4px"
+                    >
+                      {{ m }}
+                    </el-tag>
+                  </div>
+                  <el-collapse v-else class="move-collapse">
+                    <el-collapse-item v-for="detail in moveDetails" :key="detail.name" :name="detail.name">
+                      <template #title>
+                        <div class="move-header">
+                          <el-tag :style="{ backgroundColor: typeColors[detail.type] || '#999', color:'#fff', border:'none' }" size="small" class="mr-2">
+                            <el-icon class="mr-1">
+                              <Lightning v-if="detail.damageClass === 'physical'" />
+                              <Sunny v-else-if="detail.damageClass === 'special'" />
+                              <Medal v-else />
+                            </el-icon>
+                            {{ detail.type }}
+                          </el-tag>
+                          <span class="text-capitalize">{{ detail.name }}</span>
+                        </div>
+                      </template>
+                      <div class="move-detail-grid">
+                        <div><strong>Potencia:</strong> {{ detail.power ?? '—' }}</div>
+                        <div><strong>Precisión:</strong> {{ detail.accuracy ?? '—' }}</div>
+                        <div><strong>PP:</strong> {{ detail.pp ?? '—' }}</div>
+                        <div class="col-span"><em class="text-muted">{{ detail.effect }}</em></div>
                       </div>
-                    </template>
-                    <div class="move-detail-grid">
-                      <div><strong>Potencia:</strong> {{ detail.power ?? '—' }}</div>
-                      <div><strong>Precisión:</strong> {{ detail.accuracy ?? '—' }}</div>
-                      <div><strong>PP:</strong> {{ detail.pp ?? '—' }}</div>
-                      <div class="col-span"><em class="text-muted">{{ detail.effect }}</em></div>
-                    </div>
-                  </el-collapse-item>
-                </el-collapse>
+                    </el-collapse-item>
+                  </el-collapse>
+                </template>
             </div>
           </el-card>
         </el-col>
@@ -223,7 +244,10 @@ export default {
       moveDetailsLoading: false,
       moveDetails: [],
       abilityDetails: {},
-      abilityLoading: false
+      abilityLoading: false,
+      abilityLoadingMap: {},
+      typeColors: ETYPE_COLORS,
+      pokemonDescription: ''
     }
   },
   mounted() {
@@ -283,6 +307,7 @@ export default {
         this.dominantType = type
         this.dominantColor = ETYPE_COLORS[type] || '#667eea'
         this.fetchMoveDetails()
+        this.fetchPokemonDescription()
       } catch (err) {
         this.error = 'No se encontró el Pokémon. Intenta con otro nombre.'
       } finally {
@@ -296,7 +321,13 @@ export default {
       this.moveDetails = []
       const firstMoves = this.pokemon.moves.slice(0, 10)
       try {
-        const responses = await Promise.all(firstMoves.map(m => axios.get(m.move.url).catch(() => null)))
+        const responses = await Promise.all(firstMoves.map(m => {
+          return axios.get(m.move.url)
+            .then(r => r)
+            .catch(err => {
+              return null
+            })
+        }))
         this.moveDetails = responses.filter(r => r).map(r => {
           const mv = r.data
           return {
@@ -306,7 +337,13 @@ export default {
             pp: mv.pp,
             type: mv.type?.name,
             damageClass: mv.damage_class?.name,
-            effect: (mv.effect_entries?.[0]?.short_effect || '').replace(/\n/g, ' '),
+            effect: (() => {
+              const entries = mv.effect_entries || []
+              const esEntry = entries.find(e => e.language.name === 'es')
+              const enEntry = entries.find(e => e.language.name === 'en')
+              const chosen = esEntry || enEntry || entries[0]
+              return chosen ? (chosen.short_effect || chosen.effect || '').replace(/\n/g, ' ') : ''
+            })(),
             show: false
           }
         })
@@ -314,8 +351,23 @@ export default {
         this.moveDetailsLoading = false
       }
     },
+    async fetchPokemonDescription() {
+      if (!this.pokemon) return
+      try {
+        const speciesUrl = this.pokemon.species?.url
+        if (!speciesUrl) return
+        const { data } = await axios.get(speciesUrl)
+        const entries = data.flavor_text_entries || []
+        const esEntry = entries.find(e => e.language.name === 'es')
+        const enEntry = entries.find(e => e.language.name === 'en')
+        const chosen = esEntry || enEntry || entries[0]
+        this.pokemonDescription = chosen ? chosen.flavor_text.replace(/\n|\f/g, ' ') : ''
+      } catch (e) {
+      }
+    },
     async fetchAbilityDetail(ability) {
-      if (!this.pokemon || this.abilityDetails[ability]) return
+      if (!this.pokemon || this.abilityDetails[ability] || this.abilityLoadingMap[ability]) return
+      this.abilityLoadingMap[ability] = true
       this.abilityLoading = true
       try {
         const abilObj = this.pokemon.abilities.find(a => a.ability.name === ability)
@@ -330,6 +382,7 @@ export default {
       } catch (e) {
         this.abilityDetails[ability] = { effect: 'Error cargando detalle' }
       } finally {
+        this.abilityLoadingMap[ability] = false
         this.abilityLoading = false
       }
     }
