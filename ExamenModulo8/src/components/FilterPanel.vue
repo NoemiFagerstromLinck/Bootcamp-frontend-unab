@@ -29,14 +29,14 @@
           <div class="d-flex flex-wrap">
             <v-chip
               v-for="t in allTypes"
-              :key="t"
+              :key="t.en"
               size="x-small"
               class="ma-1"
-              :color="isSelectedType(t) ? typeColors[t] : undefined"
+              :color="isSelectedType(t) ? typeColors[t.en] : undefined"
               :variant="isSelectedType(t) ? 'elevated' : 'outlined'"
               @click="toggleType(t)"
               style="cursor:pointer; text-transform:capitalize;"
-            >{{ t }}</v-chip>
+            >{{ t.es }}</v-chip>
           </div>
         </v-col>
       </v-row>
@@ -58,22 +58,43 @@ export default {
   },
   computed: {
     typeColors() { return this.store.typeColors },
-    allTypes() { return Object.keys(this.store.typeColors) }
+    allTypes() {
+      return [
+        { es: 'Planta', en: 'grass' },
+        { es: 'Fuego', en: 'fire' },
+        { es: 'Agua', en: 'water' },
+        { es: 'Eléctrico', en: 'electric' },
+        { es: 'Hielo', en: 'ice' },
+        { es: 'Tierra', en: 'ground' },
+        { es: 'Roca', en: 'rock' },
+        { es: 'Hada', en: 'fairy' },
+        { es: 'Veneno', en: 'poison' },
+        { es: 'Bicho', en: 'bug' },
+        { es: 'Dragón', en: 'dragon' },
+        { es: 'Siniestro', en: 'dark' },
+        { es: 'Acero', en: 'steel' },
+        { es: 'Psíquico', en: 'psychic' },
+        { es: 'Volador', en: 'flying' },
+        { es: 'Lucha', en: 'fighting' },
+        { es: 'Fantasma', en: 'ghost' },
+        { es: 'Normal', en: 'normal' }
+      ];
+    },
   },
   methods: {
     emitFilters() {
       this.$emit('update:filters', { text: this.localSearch.trim(), idRange: this.idRange, types: this.selectedTypes })
     },
-    toggleType(t) {
-      const idx = this.selectedTypes.indexOf(t)
+    toggleType(typeObj) {
+      const idx = this.selectedTypes.indexOf(typeObj.en)
       if (idx >= 0) {
         this.selectedTypes.splice(idx, 1)
       } else {
-        this.selectedTypes.push(t)
+        this.selectedTypes.push(typeObj.en)
       }
       this.emitFilters()
     },
-    isSelectedType(t) { return this.selectedTypes.includes(t) },
+    isSelectedType(typeObj) { return this.selectedTypes.includes(typeObj.en) },
     reset() { this.localSearch=''; this.idRange=[1,200]; this.selectedTypes=[]; this.emitFilters() }
   }
 }

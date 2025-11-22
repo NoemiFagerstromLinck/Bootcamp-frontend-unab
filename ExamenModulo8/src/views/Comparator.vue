@@ -1,14 +1,24 @@
 <template>
-  <v-container>
-    <v-card rounded="xl" variant="outlined" class="mb-4">
-      <v-card-title class="text-subtitle-1 d-flex align-center">
-        <v-icon start color="purple">mdi-scale-balance</v-icon>
-        Comparar Pokémon
-        <v-spacer />
-        <v-btn size="x-small" variant="text" @click="reset">Reset</v-btn>
-      </v-card-title>
-      <v-divider />
-      <v-card-text>
+  <v-app class="pixel-font">
+    <v-app-bar class="gba-app-bar" flat>
+      <v-toolbar-title class="d-flex align-center gba-title">
+        <img src="/images/pokeball-pixel.png" alt="Pokeball pixel" style="height:2.2em;margin-right:0.5em;vertical-align:middle;" />
+        <span class="gba-title-text gba-title-pixel">Comparar Pokémon</span>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn to="/" variant="outlined" color="yellow" class="pixel-font"><v-icon left>mdi-arrow-left</v-icon> Volver</v-btn>
+    </v-app-bar>
+    <v-main>
+      <v-container>
+        <v-card rounded="xl" variant="outlined" class="mb-4">
+          <v-card-title class="text-subtitle-1 d-flex align-center">
+            <img src="/images/pokeball-pixel.png" alt="Pokeball pixel" style="height:1.5em;margin-right:0.5em;vertical-align:middle;" />
+            Comparar Pokémon
+            <v-spacer />
+            <v-btn size="x-small" variant="text" @click="reset">Reset</v-btn>
+          </v-card-title>
+          <v-divider />
+          <v-card-text>
         <v-row>
           <v-col cols="12" md="6">
             <v-text-field v-model="leftInput" label="Izquierda (nombre o ID)" variant="outlined" density="compact" @keyup.enter="loadLeft" />
@@ -55,34 +65,36 @@ const STAT_MAP = {
   hp: 'hp', attack: 'attack', defense: 'defense', 'special-attack': 'special-attack', 'special-defense': 'special-defense', speed: 'speed'
 }
 
+const PokemonMini = {
+  name: 'PokemonMini',
+  props: { pokemon: Object, side: String },
+  setup(props) { return { props, usePokemonStore } },
+  template: `
+    <v-card variant="tonal" :color="side==='left' ? 'purple' : 'pink'" rounded="xl" class="mb-2">
+      <v-card-title class="d-flex align-center">
+        <v-avatar size="64" class="me-2">
+          <img :src="'/images/pokemon-' + pokemon.id + '.png'" :alt="pokemon.name" />
+        </v-avatar>
+        <div>
+          <div style="text-transform:capitalize" class="text-subtitle-2">#{{ pokemon.id }} {{ pokemon.name }}</div>
+          <div>
+            <v-chip v-for="t in pokemon.types" :key="t.type.name" size="x-small" style="text-transform:capitalize" class="me-1" :color="typeColor(t.type.name)" />
+          </div>
+        </div>
+      </v-card-title>
+    </v-card>
+  `,
+  methods: {
+    typeColor(t){
+      const store = usePokemonStore();
+      return store.typeColors[t.type?.name || t] || undefined;
+    }
+  }
+}
+
 export default {
   name: 'Comparator',
-  components: {
-    PokemonMini: {
-      name: 'PokemonMini',
-      props: { pokemon: Object, side: String },
-      setup(props) { return { props } },
-      template: `<v-card variant="tonal" :color="side==='left' ? 'purple' : 'pink'" rounded="xl" class="mb-2">
-        <v-card-title class="d-flex align-center">
-          <v-avatar size="64" class="me-2">
-            <img :src="pokemon.sprites?.other?.['official-artwork']?.front_default || pokemon.sprites?.front_default" :alt="pokemon.name" />
-          </v-avatar>
-          <div>
-            <div style="text-transform:capitalize" class="text-subtitle-2">#{{ pokemon.id }} {{ pokemon.name }}</div>
-            <div>
-              <v-chip v-for="t in pokemon.types" :key="t.type.name" size="x-small" style="text-transform:capitalize" class="me-1" :color="typeColor(t.type.name)" />
-            </div>
-          </div>
-        </v-card-title>
-      </v-card>`,
-      methods: {
-        typeColor(t){
-          const store = usePokemonStore();
-          return store.typeColors[t] || undefined;
-        }
-      }
-    }
-  },
+  components: { PokemonMini },
   setup() {
     const store = usePokemonStore()
     const leftInput = ref('')
@@ -128,6 +140,23 @@ export default {
 }
 </script>
 <style scoped>
+.pixel-font, .gba-title-text, .gba-title-pixel, .v-btn, .v-card-title, .v-card-text, .v-chip, .v-toolbar-title, .text-caption, .text-subtitle-1, .text-subtitle-2, .text-h5, .text-h6, .text-h4, .text-h3, .text-h2, .text-h1 {
+  font-family: 'Press Start 2P', monospace !important;
+  letter-spacing: 0.5px;
+}
+body, .v-application {
+  background: linear-gradient(180deg, #1e2a78 0%, #3a8dde 100%) fixed !important;
+  min-height: 100vh;
+  background-attachment: fixed;
+}
+body::before, .v-application::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 8px);
+  z-index: 0;
+}
 .text-success { color: #2e7d32; font-weight: 600; }
 .text-error { color: #c62828; font-weight: 600; }
 </style>

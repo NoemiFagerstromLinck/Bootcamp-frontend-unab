@@ -1,30 +1,33 @@
 <template>
-  <v-app>
-    <v-app-bar :color="barColor" dark app>
-      <v-toolbar-title class="d-flex align-center">
-        <v-icon left>mdi-pokeball</v-icon>
-        Pokeguía
-        <v-chip v-if="dominantType" size="small" class="ml-2 text-capitalize" :style="{backgroundColor: dominantColor, color:'#fff'}">{{ dominantType }}</v-chip>
+  <v-app class="pixel-font">
+    <img src="/images/pikachu-pixel.png" alt="Pikachu travieso" class="pikachu-mascot" />
+    <v-app-bar class="gba-app-bar" flat>
+      <!-- Pokeball pixel PNG solo dentro del título -->
+      <v-toolbar-title class="d-flex align-center gba-title">
+        <img src="/images/pokeball-pixel.png" alt="Pokeball pixel" style="height: 2.2em; margin-right: 0.5em; vertical-align: middle;" />
+        <span class="gba-title-text gba-title-pixel">Pokeguía</span>
+        <img src="/images/pikachu-pixel.png" alt="Pikachu pixel" class="pixelart-deco pixelart-deco-right" />
+        <v-chip v-if="dominantType" size="small" class="ml-2 text-capitalize gba-type-chip" :style="{backgroundColor: dominantColor, color:'#fff', fontFamily: 'monospace'}">{{ dominantType }}</v-chip>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn to="/explorar" variant="text" size="small" class="mr-2">
+      <v-btn to="/explorar" class="gba-menu-btn">
         <v-icon left size="small">mdi-grid</v-icon>
         <span class="d-none d-sm-inline">Explorar</span>
       </v-btn>
-      <v-btn to="/favoritos" variant="text" size="small" class="mr-2">
+      <v-btn to="/favoritos" class="gba-menu-btn">
         <v-icon left size="small">mdi-heart</v-icon>
         <span class="d-none d-sm-inline">Favoritos</span>
       </v-btn>
-      <v-btn to="/equipo" variant="text" size="small" class="mr-2">
+      <v-btn to="/equipo" class="gba-menu-btn">
         <v-icon left size="small">mdi-account-group</v-icon>
         <span class="d-none d-sm-inline">Equipo</span>
       </v-btn>
-      <v-btn to="/comparar" variant="text" size="small" class="mr-2">
+      <v-btn to="/comparar" class="gba-menu-btn">
         <v-icon left size="small">mdi-compare</v-icon>
         <span class="d-none d-sm-inline">Comparar</span>
       </v-btn>
       <ThemeToggle class="mr-2" />
-      <v-btn v-if="pokemon" size="small" variant="outlined" color="yellow" @click="toggleFavorite">
+      <v-btn v-if="pokemon" size="small" class="gba-fav-btn" @click="toggleFavorite">
         <v-icon left>{{ isFav ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
         {{ isFav ? 'Favorito' : 'Marcar' }}
       </v-btn>
@@ -32,16 +35,15 @@
 
     <v-main>
       <v-container fluid class="pa-6">
-        <FilterPanel @update:filters="applyFilters" />
         <v-row justify="center">
-          <v-col cols="12" md="8" lg="6">
-            <v-card elevation="3">
-              <v-card-title class="text-h4 text-center py-5 bg-red-darken-1 text-white">
-                <v-icon left size="large">mdi-magnify</v-icon>
-                Buscador de Pokémon
+          <v-col cols="12">
+            <v-card elevation="12" class="gba-main-card animate-pop" style="max-width:1200px;margin:auto;">
+              <v-card-title class="gba-main-title">
+                <v-icon left size="large" color="#fff">mdi-magnify</v-icon>
+                <span class="gba-main-title-text gba-title-pixel">Buscador de Pokémon</span>
               </v-card-title>
-              
-              <v-card-text class="pa-6">
+              <v-card-text class="pa-8 gba-main-content">
+                <FilterPanel @update:filters="applyFilters" class="mb-6" />
                 <v-autocomplete
                   v-model="query"
                   :items="filteredSuggestions"
@@ -57,10 +59,10 @@
                   no-data-text="No hay sugerencias"
                 ></v-autocomplete>
 
-                <div class="text-center">
+                <div class="text-center my-6">
                   <v-btn
-                    color="red darken-1"
-                    size="large"
+                    class="gba-search-btn animate-pop"
+                    size="x-large"
                     @click="searchPokemon"
                     :loading="loading"
                     prepend-icon="mdi-pokeball"
@@ -69,26 +71,32 @@
                   </v-btn>
                 </div>
 
-                <v-card v-if="!pokemon && !loading" variant="tonal" color="blue-grey-lighten-5" class="mt-6">
+                <v-card v-if="!pokemon && !loading" class="gba-suggestions-card animate-fade-in">
                   <v-card-text>
-                    <p class="text-subtitle-1 font-weight-bold mb-3">
-                      <v-icon left color="info">mdi-lightbulb-outline</v-icon>
+                    <p class="gba-suggestions-title">
+                      <v-icon left color="#fff">mdi-lightbulb-outline</v-icon>
                       Sugerencias:
                     </p>
                     <div v-if="filterLoading" class="text-center py-2">
-                      <v-progress-circular indeterminate color="red" />
+                      <v-progress-circular indeterminate color="#1976D2" />
                     </div>
-                    <v-chip-group v-else>
-                      <v-chip
-                        v-for="suggestion in filteredSuggestions"
-                        :key="suggestion"
-                        @click="query = suggestion; searchPokemon()"
-                        @contextmenu.prevent="showQuickView(suggestion)"
-                        class="ma-1 suggestion-chip high-contrast-chip"
-                      >
-                        {{ suggestion }}
-                      </v-chip>
-                    </v-chip-group>
+                    <template v-else>
+                      <div v-if="filteredSuggestions.length === 1 && filteredSuggestions[0].startsWith('No hay Pokémon con esos filtros')" class="my-4">
+                        <span class="font-weight-bold px-2" style="font-family: 'monospace'; font-size: 1.2em; color: #444; background: #fffbe6; border-radius: 6px; border: 1px solid #e0e0e0;">{{ filteredSuggestions[0] }}</span>
+                      </div>
+                      <v-chip-group v-else>
+                        <v-chip
+                          v-for="suggestion in filteredSuggestions"
+                          :key="suggestion"
+                          @click="query = suggestion; searchPokemon()"
+                          @contextmenu.prevent="showQuickView(suggestion)"
+                          class="ma-2 gba-suggestion-chip animate-pop"
+                          :style="{fontFamily: 'monospace'}"
+                        >
+                          {{ suggestion }}
+                        </v-chip>
+                      </v-chip-group>
+                    </template>
                   </v-card-text>
                 </v-card>
               </v-card-text>
@@ -125,7 +133,7 @@
                   <!-- Columna izquierda: Imagen y acciones -->
                   <v-col cols="12" md="5" class="text-center">
                     <v-avatar size="220" class="mb-3 pokemon-avatar elevation-8">
-                      <v-img :src="photoUrl" :alt="pokemon.name" :lazy-src="placeholderImg"></v-img>
+                      <v-img :src="`/images/pokemon-${pokemon.id}.png`" :alt="pokemon.name" :lazy-src="placeholderImg"></v-img>
                     </v-avatar>
                     
                     <div class="d-flex justify-center gap-2 mb-4 flex-wrap">
@@ -189,7 +197,7 @@
                               :style="{ cursor: evo.name !== pokemon.name ? 'pointer' : 'default', opacity: evo.name === pokemon.name ? 1 : 0.6 }"
                             >
                               <v-avatar size="60" class="mb-1">
-                                <v-img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${evo.id}.png`" />
+                                <v-img :src="`/images/pokemon-${evo.id}.png`" />
                               </v-avatar>
                               <div class="text-caption font-weight-bold text-capitalize">{{ evo.name }}</div>
                               <v-chip size="x-small" color="grey" variant="flat" class="mt-1">#{{ evo.id }}</v-chip>
@@ -338,7 +346,7 @@
             </v-card-title>
             <v-card-text class="text-center pa-4">
               <v-avatar size="120" class="mb-3">
-                <v-img :src="quickViewPokemon.sprite" :alt="quickViewPokemon.name"></v-img>
+                <v-img :src="`/images/pokemon-${quickViewPokemon.id}.png`" :alt="quickViewPokemon.name"></v-img>
               </v-avatar>
               <div class="d-flex justify-center gap-2 flex-wrap">
                 <v-chip v-for="type in quickViewPokemon.types" :key="type" :style="{ backgroundColor: TYPE_COLORS[type] || '#999', color: '#fff' }" size="small">
@@ -378,6 +386,7 @@ const VTYPE_COLORS = {
   steel: '#B8B8D0', psychic: '#F85888', flying: '#A890F0', fighting: '#C03028', ghost: '#705898', normal: '#A8A878'
 }
 import { pokemonData } from '../data/pokemon'
+import { getPokemonDetails } from '../data/pokemonDetails.js'
 
 export default {
   name: 'VuetifyDemo',
@@ -433,9 +442,9 @@ export default {
     barColor() {
       return this.dominantColor || 'red-darken-2'
     },
+    // photoUrl is now unused for main image, but may be used elsewhere
     photoUrl() {
-      return this.pokemon?.sprites?.other?.['official-artwork']?.front_default || 
-             this.pokemon?.sprites?.front_default
+      return `/images/pokemon-${this.pokemon?.id}.png`;
     },
     placeholderImg() {
       return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="%23ddd"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="%23666">Loading</text></svg>'
@@ -472,24 +481,59 @@ export default {
     },
     applyFilters(f) {
       this.filters = f
+      if (this.pokemon) {
+        this.pokemon = null;
+        this.query = '';
+      }
       this.filterSuggestions(this.query)
     },
     async filterByAdvancedAsync(list) {
-      const map = new Map()
-      pokemonData[0].pokemones.forEach(p => map.set(p.nombre.toLowerCase(), parseInt(p.id,10)))
-      const needsTypes = this.filters.types.length > 0
-      const out = []
+      const map = new Map();
+      pokemonData[0].pokemones.forEach(p => map.set(p.nombre.toLowerCase(), String(p.id)));
+      // Normalizador de tipos (quita acentos, minúsculas, mapea español/inglés)
+      const normalizeType = (t) => {
+        const map = {
+          "planta": "grass", "fuego": "fire", "agua": "water", "eléctrico": "electric", "electrico": "electric",
+          "hielo": "ice", "tierra": "ground", "roca": "rock", "hada": "fairy", "veneno": "poison", "bicho": "bug",
+          "dragón": "dragon", "dragon": "dragon", "siniestro": "dark", "oscuro": "dark", "acero": "steel",
+          "psíquico": "psychic", "psiquico": "psychic", "psychic": "psychic", "flying": "flying", "volador": "flying",
+          "lucha": "fighting", "fighting": "fighting", "fantasma": "ghost", "ghost": "ghost", "normal": "normal"
+        };
+        let norm = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        return map[norm] || norm;
+      };
+      const needsTypes = this.filters.types.length > 0;
+      const out = [];
+      const normalizedFilterTypes = this.filters.types.map(normalizeType);
       for (const name of list) {
-        const id = map.get(name.toLowerCase()) || 0
-        if (id < this.filters.idRange[0] || id > this.filters.idRange[1]) continue
-        if (this.filters.text && !name.toLowerCase().includes(this.filters.text.toLowerCase())) continue
+        const id = map.get(name.toLowerCase());
+        if (!id) continue;
+        const idNum = parseInt(id, 10);
+        if (idNum < this.filters.idRange[0] || idNum > this.filters.idRange[1]) continue;
+        if (this.filters.text && !name.toLowerCase().includes(this.filters.text.toLowerCase())) continue;
         if (needsTypes) {
-          const types = await this.store.getTypes(name)
-          if (!types.some(t => this.filters.types.includes(t))) continue
+          const d = getPokemonDetails(id);
+          let tipos = [];
+          if (Array.isArray(d.tipo)) tipos = d.tipo;
+          else if (Array.isArray(d.tipos)) tipos = d.tipos;
+          else if (typeof d.tipo === 'string') tipos = [d.tipo];
+          else if (typeof d.tipos === 'string') tipos = [d.tipos];
+          else tipos = ["Normal"];
+          tipos = tipos.map(normalizeType);
+          // Si el detalle es el fallback (solo tipo Normal), mostrar advertencia
+          if (tipos.length === 1 && tipos[0] === 'normal' && (!d.nombre || d.nombre === 'unknown')) {
+            // Solo log, no bloquea sugerencia si existe en la lista
+            // console.warn('No hay detalles para', name, 'id', id, 'en pokemonDetails.js');
+          }
+          if (!normalizedFilterTypes.some(f => tipos.includes(f))) continue;
         }
-        out.push(name)
+        out.push(name);
       }
-      return out
+      // Si no hay sugerencias, mostrar mensaje especial
+      if (out.length === 0) {
+        out.push('No hay Pokémon con esos filtros o faltan detalles en pokemonDetails.js');
+      }
+      return out;
     },
     async searchPokemon() {
       if (!this.query || !this.query.trim()) return
@@ -685,6 +729,37 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: 'VT323';
+  src: url('/fonts/VT323-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'PressStart2P';
+  src: url('/fonts/PressStart2P-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+.gba-title-pixel {
+  font-family: 'PressStart2P', 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif !important;
+  letter-spacing: 2px;
+  font-size: 2.1rem;
+}
+.pixelart-deco {
+  position: absolute;
+  top: 0;
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  z-index: 10;
+}
+.pixelart-deco-left {
+  left: 12px;
+}
+.pixelart-deco-right {
+  right: 12px;
+}
 .bg-gradient {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -729,19 +804,166 @@ export default {
   transform: scale(1.1) rotate(5deg);
 }
 
-.suggestion-chip {
-  transition: all 0.2s ease;
-  cursor: pointer;
+.gba-app-bar {
+  background: linear-gradient(180deg, #b97fc9 0%, #a16ae8 100%) !important;
+  border-bottom: 6px solid #2a4e7e;
+  box-shadow: 0 4px 24px #2a4e7e33;
 }
-.suggestion-chip:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.gba-title {
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 2.1rem;
 }
-.high-contrast-chip {
-  background: #fff !important;
-  color: #1a1a1a !important;
-  border: 2px solid #d32f2f !important;
+.gba-title-text {
+  color: #fff;
+  text-shadow: 1px 2px 0 #2a4e7e, 0 0 8px #fff;
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+}
+.gba-type-chip {
+  border-radius: 4px;
   font-weight: bold;
+  box-shadow: 0 2px 8px #2a4e7e33;
+  border: 2px solid #2a4e7e;
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+}
+.gba-menu-btn {
+  background: #2a4e7e;
+  color: #fff !important;
+  border-radius: 0px;
+  margin-left: 6px;
+  margin-right: 6px;
+  font-weight: 700;
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 0 #000;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.gba-menu-btn:hover {
+  background: #fff !important;
+  color: #2a4e7e !important;
+  box-shadow: 0 2px 8px #2a4e7e66;
+}
+.gba-fav-btn {
+  background: #fff;
+  color: #b97fc9 !important;
+  border-radius: 0px;
+  font-weight: 700;
+  margin-left: 10px;
+  border: 2px solid #b97fc9;
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+}
+.gba-filters-card {
+  background: linear-gradient(120deg, #e0ffe0 60%, #b2f2e9 100%);
+  border-radius: 8px;
+  box-shadow: 0 4px 24px #2a4e7e22;
+  margin-bottom: 32px;
+  padding: 18px 12px 8px 12px;
+  border: 4px solid #2a4e7e;
+}
+.gba-main-card {
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 32px #2a4e7e22;
+  border: 4px solid #2a4e7e;
+}
+.gba-main-title {
+  background: linear-gradient(90deg, #b97fc9 60%, #a16ae8 100%);
+  color: #fff;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 2px 12px #2a4e7e33;
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+  font-size: 2rem;
+  padding: 18px 0 18px 0;
+  text-align: left;
+}
+.gba-main-title-text {
+  color: #fff;
+  text-shadow: 1px 2px 0 #2a4e7e, 0 0 8px #fff;
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+}
+.gba-main-content {
+  background: #e0ffe0;
+  border-radius: 0 0 8px 8px;
+  border-top: 2px solid #b97fc9;
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+}
+.gba-search-btn {
+  background: #2a4e7e;
+  color: #fff !important;
+  border-radius: 0px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+  border: 2px solid #b97fc9;
+  box-shadow: 0 2px 0 #000;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.gba-search-btn:hover {
+  background: #b97fc9 !important;
+  color: #fff !important;
+  transform: scale(1.07);
+  box-shadow: 0 4px 24px #b97fc966;
+}
+.gba-suggestions-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px #2a4e7e33;
+  margin-top: 32px;
+  border: 4px solid #2a4e7e;
+}
+.gba-suggestions-title {
+  color: #b97fc9;
+  letter-spacing: 1px;
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+}
+.gba-suggestion-chip {
+  background: #e0ffe0 !important;
+  color: #2a4e7e !important;
+  border: 2px solid #b97fc9 !important;
+  border-radius: 0px !important;
+  font-weight: bold;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 0 #000;
+  transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+  cursor: pointer;
+  font-family: 'VT323', 'Fira Mono', 'monospace', Arial, sans-serif;
+}
+.gba-suggestion-chip:hover {
+  background: #b97fc9 !important;
+  color: #fff !important;
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px #b97fc966;
+}
+.animate-pop {
+  animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.animate-fade-in {
+  animation: fadeIn 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-pop {
+  animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.animate-fade-in {
+  animation: fadeIn 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .shimmer-card {
@@ -814,6 +1036,53 @@ export default {
 .evolution-current {
   border: 3px solid var(--v-theme-primary);
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+html, body, #app, .v-application {
+  font-family: 'Press Start 2P', monospace !important;
+  font-size: 15px !important;
+  letter-spacing: 0.5px !important;
+}
+
+.pixel-font, .gba-title-text, .gba-main-title-text, .gba-suggestions-title, .gba-suggestion-chip, .gba-type-chip, .gba-main-title, .gba-main-title-text, .gba-title-pixel, .v-btn, .v-chip, .v-card-title, .v-card-text, .v-autocomplete, .v-input, .v-label, .v-list-item-title, .v-list-item-content, .v-toolbar-title, .v-alert-title, .v-alert, .v-avatar, .v-progress-linear, .v-progress-circular, .v-icon, .text-h5, .text-center, .text-caption, .text-body-2, .font-weight-bold, .font-weight-black, .text-subtitle-2, .text-capitalize, .text-body-2, .text-h5, .text-h6, .text-h4, .text-h3, .text-h2, .text-h1 {
+  font-family: 'Press Start 2P', monospace !important;
+  letter-spacing: 0.5px !important;
+}
+
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('./fonts/PressStart2P-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* Pikachu mascot animation */
+.pikachu-mascot {
+  position: fixed;
+  left: 0;
+  bottom: 40px;
+  width: 64px;
+  height: 64px;
+  z-index: 9999;
+  pointer-events: none;
+  animation: pikachu-walk 12s linear infinite;
+}
+
+@keyframes pikachu-walk {
+  0% { left: 0; bottom: 40px; transform: scaleX(1) rotate(-10deg); }
+  10% { left: 20vw; bottom: 60px; transform: scaleX(1) rotate(0deg); }
+  20% { left: 40vw; bottom: 80px; transform: scaleX(1) rotate(10deg); }
+  30% { left: 60vw; bottom: 100px; transform: scaleX(1) rotate(0deg); }
+  40% { left: 80vw; bottom: 120px; transform: scaleX(-1) rotate(-10deg); }
+  50% { left: 100vw; bottom: 140px; transform: scaleX(-1) rotate(0deg); }
+  60% { left: 80vw; bottom: 120px; transform: scaleX(-1) rotate(10deg); }
+  70% { left: 60vw; bottom: 100px; transform: scaleX(-1) rotate(0deg); }
+  80% { left: 40vw; bottom: 80px; transform: scaleX(1) rotate(-10deg); }
+  90% { left: 20vw; bottom: 60px; transform: scaleX(1) rotate(0deg); }
+  100% { left: 0; bottom: 40px; transform: scaleX(1) rotate(-10deg); }
 }
 
 /* High-contrast helpers */
