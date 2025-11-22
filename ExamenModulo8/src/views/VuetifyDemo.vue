@@ -84,9 +84,7 @@
                         :key="suggestion"
                         @click="query = suggestion; searchPokemon()"
                         @contextmenu.prevent="showQuickView(suggestion)"
-                        color="red"
-                        variant="outlined"
-                        class="ma-1 suggestion-chip"
+                        class="ma-1 suggestion-chip high-contrast-chip"
                       >
                         {{ suggestion }}
                       </v-chip>
@@ -738,6 +736,12 @@ export default {
 .suggestion-chip:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.high-contrast-chip {
+  background: #fff !important;
+  color: #1a1a1a !important;
+  border: 2px solid #d32f2f !important;
+  font-weight: bold;
 }
 
 .shimmer-card {
