@@ -15,14 +15,14 @@ export const usePokemonStore = defineStore('pokemon', {
     loading: false,
     error: '',
     favorites: JSON.parse(localStorage.getItem('pk_favorites') || '[]'),
-    team: JSON.parse(localStorage.getItem('pk_team') || '[]'), // up to 6 ids
-    teamData: [], // detalles cargados de cada pokemon del equipo
-    analytics: JSON.parse(localStorage.getItem('pk_analytics') || '{}'), // counts per name
+    team: JSON.parse(localStorage.getItem('pk_team') || '[]'),
+    teamData: [],
+    analytics: JSON.parse(localStorage.getItem('pk_analytics') || '{}'),
     lastSearch: localStorage.getItem('pk_lastSearch') || '',
     typeColors: TYPE_COLORS,
     themeMode: localStorage.getItem('pk_theme') || 'light',
-    cache: {}, // in-memory Pokémon cache
-    typesCache: {} // nombre/id -> [types]
+    cache: {},
+    typesCache: {}
   }),
   getters: {
     isFavorite: (state) => (id) => state.favorites.includes(id),
@@ -88,7 +88,7 @@ export const usePokemonStore = defineStore('pokemon', {
         const { data } = await axios.get(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(key)}`)
         const types = (data.types || []).map(t => t.type.name)
         this.typesCache[key] = types
-        // guardar sprite mínimo para futuras vistas (opcional)
+        if (!this.cache[key]) this.cache[key] = data
         if (!this.cache[key]) this.cache[key] = data
         return types
       } catch (_) {
@@ -149,7 +149,6 @@ export const usePokemonStore = defineStore('pokemon', {
       } catch (_) {}
     },
     async loadTeam() {
-      // cargar detalles para todos los ids actuales del equipo
       const missing = this.team.filter(id => !this.teamData.find(p => p.id === id))
       await Promise.all(missing.map(id => this.loadTeamMember(id)))
     }

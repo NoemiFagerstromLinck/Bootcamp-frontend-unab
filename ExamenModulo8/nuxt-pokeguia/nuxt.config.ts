@@ -1,4 +1,3 @@
-// Nuxt 3 configuration for parallel Pokeguía
 import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({

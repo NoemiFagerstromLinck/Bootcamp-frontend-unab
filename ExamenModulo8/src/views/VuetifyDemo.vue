@@ -2,7 +2,6 @@
   <v-app class="pixel-font">
     <img src="/images/pikachu-pixel.png" alt="Pikachu travieso" class="pikachu-mascot" />
     <v-app-bar class="gba-app-bar" flat>
-      <!-- Pokeball pixel PNG solo dentro del título -->
       <v-toolbar-title class="d-flex align-center gba-title">
         <img src="/images/pokeball-pixel.png" alt="Pokeball pixel" style="height: 2.2em; margin-right: 0.5em; vertical-align: middle;" />
         <span class="gba-title-text gba-title-pixel">Pokeguía</span>
@@ -80,23 +79,18 @@
                     <div v-if="filterLoading" class="text-center py-2">
                       <v-progress-circular indeterminate color="#1976D2" />
                     </div>
-                    <template v-else>
-                      <div v-if="filteredSuggestions.length === 1 && filteredSuggestions[0].startsWith('No hay Pokémon con esos filtros')" class="my-4">
-                        <span class="font-weight-bold px-2" style="font-family: 'monospace'; font-size: 1.2em; color: #444; background: #fffbe6; border-radius: 6px; border: 1px solid #e0e0e0;">{{ filteredSuggestions[0] }}</span>
-                      </div>
-                      <v-chip-group v-else>
-                        <v-chip
-                          v-for="suggestion in filteredSuggestions"
-                          :key="suggestion"
-                          @click="query = suggestion; searchPokemon()"
-                          @contextmenu.prevent="showQuickView(suggestion)"
-                          class="ma-2 gba-suggestion-chip animate-pop"
-                          :style="{fontFamily: 'monospace'}"
-                        >
-                          {{ suggestion }}
-                        </v-chip>
-                      </v-chip-group>
-                    </template>
+                    <v-chip-group v-else>
+                      <v-chip
+                        v-for="suggestion in filteredSuggestions"
+                        :key="suggestion"
+                        @click="query = suggestion; searchPokemon()"
+                        @contextmenu.prevent="showQuickView(suggestion)"
+                        class="ma-2 gba-suggestion-chip animate-pop"
+                        :style="{fontFamily: 'monospace'}"
+                      >
+                        {{ suggestion }}
+                      </v-chip>
+                    </v-chip-group>
                   </v-card-text>
                 </v-card>
               </v-card-text>
@@ -130,7 +124,6 @@
 
               <v-card-text class="pa-4">
                 <v-row>
-                  <!-- Columna izquierda: Imagen y acciones -->
                   <v-col cols="12" md="5" class="text-center">
                     <v-avatar size="220" class="mb-3 pokemon-avatar elevation-8">
                       <v-img :src="`/images/pokemon-${pokemon.id}.png`" :alt="pokemon.name" :lazy-src="placeholderImg"></v-img>
@@ -148,7 +141,6 @@
                       </v-btn>
                     </div>
 
-                    <!-- Stats -->
                     <v-card variant="elevated" rounded="lg" class="pa-3 mb-3 hc-card">
                       <div class="text-subtitle-2 font-weight-bold mb-3 d-flex align-center justify-center">
                         <v-icon size="small" color="indigo" class="mr-1">mdi-chart-bar</v-icon>
@@ -178,7 +170,6 @@
                         <span class="text-subtitle-2 font-weight-bold hc-strong">Total:</span>
                         <v-chip color="deep-purple" variant="flat" class="font-weight-black">{{ totalStats }}</v-chip>
                       </div>
-                      <!-- Cadena Evolutiva -->
                       <v-card v-if="evolutionChain.length > 0" variant="outlined" rounded="lg" class="pa-3 mt-3 hc-chain">
                         <div class="text-subtitle-2 font-weight-bold mb-3 d-flex align-center justify-center hc-muted">
                           <v-icon size="small" color="grey-darken-1" class="mr-1">mdi-chart-timeline-variant</v-icon>
@@ -209,7 +200,6 @@
                       
                     </v-card>
 
-                    <!-- Características físicas -->
                     <v-card variant="elevated" rounded="lg" class="pa-3 hc-card">
                       <div class="text-subtitle-2 font-weight-bold mb-2 d-flex align-center justify-center">
                         <v-icon size="small" color="teal" class="mr-1">mdi-information</v-icon>
@@ -238,9 +228,7 @@
                     </v-card>
                   </v-col>
 
-                  <!-- Columna derecha: Habilidades y Movimientos -->
                   <v-col cols="12" md="7">
-                    <!-- Habilidades -->
                     <v-card variant="outlined" rounded="lg" class="mb-3 pa-3">
                       <div class="text-h6 font-weight-bold mb-3 d-flex align-center">
                         <v-icon color="purple" class="mr-2">mdi-shield-star</v-icon>
@@ -272,7 +260,6 @@
                       </div>
                     </v-card>
 
-                    <!-- Movimientos -->
                     <v-card variant="outlined" rounded="lg" class="pa-3">
                       <div class="text-h6 font-weight-bold mb-3 d-flex align-center">
                         <v-icon color="orange" class="mr-2">mdi-flash</v-icon>
@@ -386,7 +373,6 @@ const VTYPE_COLORS = {
   steel: '#B8B8D0', psychic: '#F85888', flying: '#A890F0', fighting: '#C03028', ghost: '#705898', normal: '#A8A878'
 }
 import { pokemonData } from '../data/pokemon'
-import { getPokemonDetails } from '../data/pokemonDetails.js'
 
 export default {
   name: 'VuetifyDemo',
@@ -488,52 +474,21 @@ export default {
       this.filterSuggestions(this.query)
     },
     async filterByAdvancedAsync(list) {
-      const map = new Map();
-      pokemonData[0].pokemones.forEach(p => map.set(p.nombre.toLowerCase(), String(p.id)));
-      // Normalizador de tipos (quita acentos, minúsculas, mapea español/inglés)
-      const normalizeType = (t) => {
-        const map = {
-          "planta": "grass", "fuego": "fire", "agua": "water", "eléctrico": "electric", "electrico": "electric",
-          "hielo": "ice", "tierra": "ground", "roca": "rock", "hada": "fairy", "veneno": "poison", "bicho": "bug",
-          "dragón": "dragon", "dragon": "dragon", "siniestro": "dark", "oscuro": "dark", "acero": "steel",
-          "psíquico": "psychic", "psiquico": "psychic", "psychic": "psychic", "flying": "flying", "volador": "flying",
-          "lucha": "fighting", "fighting": "fighting", "fantasma": "ghost", "ghost": "ghost", "normal": "normal"
-        };
-        let norm = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-        return map[norm] || norm;
-      };
-      const needsTypes = this.filters.types.length > 0;
-      const out = [];
-      const normalizedFilterTypes = this.filters.types.map(normalizeType);
+      const map = new Map()
+      pokemonData[0].pokemones.forEach(p => map.set(p.nombre.toLowerCase(), parseInt(p.id,10)))
+      const needsTypes = this.filters.types.length > 0
+      const out = []
       for (const name of list) {
-        const id = map.get(name.toLowerCase());
-        if (!id) continue;
-        const idNum = parseInt(id, 10);
-        if (idNum < this.filters.idRange[0] || idNum > this.filters.idRange[1]) continue;
-        if (this.filters.text && !name.toLowerCase().includes(this.filters.text.toLowerCase())) continue;
+        const id = map.get(name.toLowerCase()) || 0
+        if (id < this.filters.idRange[0] || id > this.filters.idRange[1]) continue
+        if (this.filters.text && !name.toLowerCase().includes(this.filters.text.toLowerCase())) continue
         if (needsTypes) {
-          const d = getPokemonDetails(id);
-          let tipos = [];
-          if (Array.isArray(d.tipo)) tipos = d.tipo;
-          else if (Array.isArray(d.tipos)) tipos = d.tipos;
-          else if (typeof d.tipo === 'string') tipos = [d.tipo];
-          else if (typeof d.tipos === 'string') tipos = [d.tipos];
-          else tipos = ["Normal"];
-          tipos = tipos.map(normalizeType);
-          // Si el detalle es el fallback (solo tipo Normal), mostrar advertencia
-          if (tipos.length === 1 && tipos[0] === 'normal' && (!d.nombre || d.nombre === 'unknown')) {
-            // Solo log, no bloquea sugerencia si existe en la lista
-            // console.warn('No hay detalles para', name, 'id', id, 'en pokemonDetails.js');
-          }
-          if (!normalizedFilterTypes.some(f => tipos.includes(f))) continue;
+          const types = await this.store.getTypes(name)
+          if (!types.some(t => this.filters.types.includes(t))) continue
         }
-        out.push(name);
+        out.push(name)
       }
-      // Si no hay sugerencias, mostrar mensaje especial
-      if (out.length === 0) {
-        out.push('No hay Pokémon con esos filtros o faltan detalles en pokemonDetails.js');
-      }
-      return out;
+      return out
     },
     async searchPokemon() {
       if (!this.query || !this.query.trim()) return
@@ -553,7 +508,7 @@ export default {
         this.fetchMoveDetails()
         this.fetchPokemonDescription()
           this.fetchEvolutionChain()
-        // actualizar store (cache, analytics, persistencia)
+        this.store.fetchPokemon(this.query.toLowerCase()).catch(()=>{})
         this.store.fetchPokemon(this.query.toLowerCase()).catch(()=>{})
       } catch (err) {
         this.error = 'No se encontró el Pokémon. Intenta con otro nombre.'
@@ -1085,7 +1040,6 @@ html, body, #app, .v-application {
   100% { left: 0; bottom: 40px; transform: scaleX(1) rotate(-10deg); }
 }
 
-/* High-contrast helpers */
 .hc-card {
   background: #ffffff;
   color: #212121;

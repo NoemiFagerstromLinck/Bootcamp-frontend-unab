@@ -7,7 +7,6 @@ const Comparator = () => import('../views/Comparator.vue')
 const ExploreView = () => import('../views/ExploreView.vue')
 
 const router = createRouter({
-  // Use BASE_URL provided by Vite (from vite.config.js base)
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', name: 'Home', component: VuetifyDemo },

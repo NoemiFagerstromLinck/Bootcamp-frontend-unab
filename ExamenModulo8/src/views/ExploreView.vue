@@ -6,10 +6,12 @@
         <span class="gba-title-text gba-title-pixel">Explorar Pokémon</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn to="/" variant="outlined" color="yellow" class="pixel-font"><v-icon left>mdi-arrow-left</v-icon> Volver</v-btn>
+      <v-btn to="/" variant="outlined" color="yellow" class="pixel-font">
+        <v-icon left>mdi-arrow-left</v-icon> Volver
+      </v-btn>
     </v-app-bar>
     <v-main>
-      <v-container fluid class="py-6">
+      <v-container fluid>
         <v-row>
           <v-col 
             v-for="p in displayedPokemon" 
@@ -86,7 +88,6 @@ export default {
     loadMore() {
       if (this.loading) return
       if (this.displayedPokemon.length >= this.totalPokemon) return
-      
       this.loading = true
       setTimeout(() => {
         const start = this.page * this.pageSize
@@ -101,7 +102,6 @@ export default {
       const scrollTop = window.scrollY || document.documentElement.scrollTop
       const windowHeight = window.innerHeight
       const docHeight = document.documentElement.scrollHeight
-      
       if (scrollTop + windowHeight >= docHeight - 200) {
         this.loadMore()
       }

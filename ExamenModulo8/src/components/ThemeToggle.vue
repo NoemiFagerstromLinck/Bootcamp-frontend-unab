@@ -18,7 +18,6 @@ export default {
       store.toggleTheme()
       theme.global.name.value = store.themeMode
     }
-    // inicializar
     theme.global.name.value = store.themeMode
     return { toggle, isDark }
   }

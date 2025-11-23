@@ -50,7 +50,6 @@ export const usePokemonStore = defineStore('pokemon', {
         return
       }
       try {
-        const { data } = await axios.get(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(key)}`)
         this.cache[key] = data
         this.activePokemon = data
         this.lastSearch = data.name

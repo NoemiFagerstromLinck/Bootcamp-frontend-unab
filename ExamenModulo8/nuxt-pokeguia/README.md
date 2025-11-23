@@ -1,4 +1,3 @@
-# Pokeguía Nuxt Paralelo
 
 Versión Nuxt 3 + Vuetify + Pinia del proyecto Pokeguía.
 

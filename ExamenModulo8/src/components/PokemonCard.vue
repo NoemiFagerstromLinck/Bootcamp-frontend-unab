@@ -44,8 +44,6 @@
 
 <script>
 import { getSpecificPokemonImage, getAlternativeUrls } from '../data/pokemonImages.js'
-
-// Cache simple en módulo para evitar múltiples peticiones por ID
 const cryCache = {}
 
 export default {
@@ -115,38 +113,33 @@ export default {
       }
     },
     createDefaultSprite(id) {
-      return `
-        <svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="redGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#DC143C;stop-opacity:1" />
-            </linearGradient>
-            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
-            </linearGradient>
-          </defs>
-          
-          <circle cx="32" cy="32" r="30" fill="url(#redGrad)" stroke="#8B0000" stroke-width="2"/>
-          <path d="M 2 32 L 62 32" stroke="#2C1810" stroke-width="3"/>
-          <circle cx="32" cy="32" r="8" fill="url(#goldGrad)" stroke="#8B0000" stroke-width="2"/>
-          <circle cx="32" cy="32" r="4" fill="white" stroke="#8B0000" stroke-width="1"/>
-          
-          <text x="32" y="18" font-family="Courier New, monospace" font-size="7" 
-                text-anchor="middle" fill="white" font-weight="bold" 
-                stroke="#8B0000" stroke-width="0.5">
-            #${id.toString().padStart(3, '0')}
-          </text>
-          <text x="32" y="48" font-family="Courier New, monospace" font-size="6" 
-                text-anchor="middle" fill="white" font-weight="bold"
-                stroke="#8B0000" stroke-width="0.5">
-            ${this.nombre.toUpperCase().substring(0, 7)}
-          </text>
-        </svg>
-      `
+      return `<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="redGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#DC143C;stop-opacity:1" />
+          </linearGradient>
+          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <circle cx="32" cy="32" r="30" fill="url(#redGrad)" stroke="#8B0000" stroke-width="2"/>
+        <path d="M 2 32 L 62 32" stroke="#2C1810" stroke-width="3"/>
+        <circle cx="32" cy="32" r="8" fill="url(#goldGrad)" stroke="#8B0000" stroke-width="2"/>
+        <circle cx="32" cy="32" r="4" fill="white" stroke="#8B0000" stroke-width="1"/>
+        <text x="32" y="18" font-family="Courier New, monospace" font-size="7" 
+              text-anchor="middle" fill="white" font-weight="bold" 
+              stroke="#8B0000" stroke-width="0.5">
+          #${id.toString().padStart(3, '0')}
+        </text>
+        <text x="32" y="48" font-family="Courier New, monospace" font-size="6" 
+              text-anchor="middle" fill="white" font-weight="bold"
+              stroke="#8B0000" stroke-width="0.5">
+          ${this.nombre.toUpperCase().substring(0, 7)}
+        </text>
+      </svg>`
     }
-    ,
     async playCry() {
       if (this.isCryPlaying) return
       this.loadingCry = true
@@ -168,7 +161,6 @@ export default {
       const numericId = parseInt(this.id, 10)
       if (isNaN(numericId)) return null
 
-      // Posibles rutas (repositorio oficial de cries de PokeAPI)
       const base = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon'
       const candidates = [
         `${base}/legacy/${numericId}.ogg`,
@@ -182,7 +174,7 @@ export default {
             cryCache[this.id] = url
             return url
           }
-        } catch (_) { /* ignore */ }
+        } catch (_) { }
       }
       return null
     },
@@ -210,7 +202,6 @@ export default {
         osc.type = 'square'
         const baseFreq = 440 + (parseInt(this.id,10) % 200)
         osc.frequency.setValueAtTime(baseFreq, ctx.currentTime)
-        // simple pitch envelope
         osc.frequency.linearRampToValueAtTime(baseFreq * 1.4, ctx.currentTime + 0.15)
         osc.frequency.linearRampToValueAtTime(baseFreq * 0.7, ctx.currentTime + 0.35)
         gain.gain.setValueAtTime(0.0001, ctx.currentTime)
@@ -256,29 +247,4 @@ export default {
 .pokemon-description { color:#654321; font-size:.85rem; line-height:1.3; text-shadow:1px 1px 2px rgba(255,255,255,.6); }
 .ruby-text { color:#FFD700 !important; font-weight:bold; text-shadow:2px 2px 4px rgba(0,0,0,.8); }
 .region-text { color:#654321; font-weight:600; text-shadow:1px 1px 2px rgba(255,255,255,.8); font-family:'Courier New',monospace; }
-.cry-btn {
-  position:absolute;
-  top:-4px;
-  right:-4px;
-  min-width:28px;
-  height:28px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.4);
 }
-.cry-avatar {
-  transition:transform .35s ease, filter .35s ease;
-}
-.cry-playing {
-  animation: cryPulse .6s infinite;
-  filter: drop-shadow(0 0 8px rgba(255,215,0,0.7));
-}
-@keyframes cryPulse {
-  0%,100% { transform: scale(1); }
-  50% { transform: scale(1.15) rotate(3deg); }
-}
-@media (max-width:576px){
-  .pokemon-sprite{width:48px;height:48px}
-  .pokemon-name{font-size:.95rem}
-  .pokemon-id{padding:6px 8px;font-size:.8rem}
-  .pokemon-description{font-size:.75rem}
-}
-</style>
